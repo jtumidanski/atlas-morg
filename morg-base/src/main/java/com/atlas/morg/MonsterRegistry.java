@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import com.atlas.morg.builder.MonsterBuilder;
 import com.atlas.morg.model.MapKey;
@@ -23,7 +24,7 @@ public class MonsterRegistry {
 
    private final Map<Integer, Monster> monsterMap;
 
-   private final Map<MapKey, Set<Monster>> monstersInMapMap;
+   private final Map<MapKey, Set<Integer>> monstersInMapMap;
 
    private final Map<Integer, Integer> monsterLocks;
 
@@ -67,7 +68,7 @@ public class MonsterRegistry {
          if (!monstersInMapMap.containsKey(mapKey)) {
             monstersInMapMap.put(mapKey, new HashSet<>());
          }
-         monstersInMapMap.get(mapKey).add(monster);
+         monstersInMapMap.get(mapKey).add(monster.uniqueId());
 
          return monster;
       }
@@ -85,7 +86,9 @@ public class MonsterRegistry {
    public Set<Monster> getMonstersInMap(int worldId, int channelId, int mapId) {
       MapKey mapKey = new MapKey(worldId, channelId, mapId);
       if (monstersInMapMap.containsKey(mapKey)) {
-         return Collections.unmodifiableSet(monstersInMapMap.get(mapKey));
+         return monstersInMapMap.get(mapKey).stream()
+               .map(monsterMap::get)
+               .collect(Collectors.toUnmodifiableSet());
       }
       return Collections.emptySet();
    }
@@ -93,5 +96,14 @@ public class MonsterRegistry {
    protected Integer getMonsterLock(int uniqueId) {
       monsterLocks.putIfAbsent(uniqueId, uniqueId);
       return monsterLocks.get(uniqueId);
+   }
+
+   public void updateMonster(int uniqueId, int endX, int endY, int stance) {
+      synchronized (getMonsterLock(uniqueId)) {
+         if (monsterMap.containsKey(uniqueId)) {
+            Monster monster = monsterMap.get(uniqueId);
+            monsterMap.put(uniqueId, monster.move(endX, endY, stance));
+         }
+      }
    }
 }

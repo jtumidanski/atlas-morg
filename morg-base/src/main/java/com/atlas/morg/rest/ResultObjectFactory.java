@@ -14,6 +14,12 @@ public final class ResultObjectFactory {
       return new ResultObjectBuilder(MonsterAttributes.class, monster.uniqueId())
             .setAttribute(new MonsterAttributesBuilder()
                   .setMonsterId(monster.monsterId())
+                  .setControlCharacterId(monster.controlCharacterId())
+                  .setX(monster.x())
+                  .setY(monster.y())
+                  .setFh(monster.fh())
+                  .setStance(monster.stance())
+                  .setTeam(monster.team())
             );
    }
 }

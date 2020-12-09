@@ -8,8 +8,9 @@ public final class MonsterProcessor {
    private MonsterProcessor() {
    }
 
-   public static Monster createMonster(int worldId, int channelId, int mapId, int monsterId) {
-      Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId);
+   public static Monster createMonster(int worldId, int channelId, int mapId, int monsterId, int x, int y, int fh, int stance,
+                                       int team) {
+      Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId, x, y, fh, stance, team);
       MonsterEventProducer.getInstance().sendCreated(worldId, channelId, mapId, monsterId);
       return monster;
    }

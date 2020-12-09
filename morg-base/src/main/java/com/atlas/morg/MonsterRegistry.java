@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.atlas.morg.builder.MonsterBuilder;
 import com.atlas.morg.model.MapKey;
 import com.atlas.morg.model.Monster;
 
@@ -48,7 +49,7 @@ public class MonsterRegistry {
       monsterLocks = new ConcurrentHashMap<>();
    }
 
-   public Monster createMonster(int worldId, int channelId, int mapId, int monsterId) {
+   public Monster createMonster(int worldId, int channelId, int mapId, int monsterId, int x, int y, int fh, int stance, int team) {
       synchronized (registryLock) {
          List<Integer> existingIds = new ArrayList<>(monsterMap.keySet());
          int currentUniqueId;
@@ -58,7 +59,8 @@ public class MonsterRegistry {
             }
          } while (existingIds.contains(currentUniqueId));
 
-         Monster monster = new Monster(worldId, channelId, mapId, currentUniqueId, monsterId);
+         Monster monster = new MonsterBuilder(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team)
+               .build();
          monsterMap.put(monster.uniqueId(), monster);
 
          MapKey mapKey = new MapKey(worldId, channelId, mapId);

@@ -9,9 +9,21 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
       implements AttributeResultBuilder {
    private Integer monsterId;
 
+   private Integer controlCharacterId;
+
+   private Integer x;
+
+   private Integer y;
+
+   private Integer fh;
+
+   private Integer stance;
+
+   private Integer team;
+
    @Override
    public MonsterAttributes construct() {
-      return new MonsterAttributes(monsterId);
+      return new MonsterAttributes(monsterId, controlCharacterId, x, y, fh, stance, team);
    }
 
    @Override
@@ -21,6 +33,36 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    public MonsterAttributesBuilder setMonsterId(Integer monsterId) {
       this.monsterId = monsterId;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setControlCharacterId(Integer controlCharacterId) {
+      this.controlCharacterId = controlCharacterId;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setX(Integer x) {
+      this.x = x;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setY(Integer y) {
+      this.y = y;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setFh(Integer fh) {
+      this.fh = fh;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setStance(Integer stance) {
+      this.stance = stance;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setTeam(Integer team) {
+      this.team = team;
       return getThis();
    }
 }

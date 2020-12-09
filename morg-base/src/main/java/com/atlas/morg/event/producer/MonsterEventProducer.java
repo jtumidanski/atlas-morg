@@ -32,18 +32,18 @@ public class MonsterEventProducer {
       producer = KafkaProducerFactory.createProducer("Monster Registry", System.getenv("BOOTSTRAP_SERVERS"));
    }
 
-   public void sendCreated(int worldId, int channelId, int mapId, int monsterId) {
+   public void sendCreated(int worldId, int channelId, int mapId, int uniqueId) {
       String topic = System.getenv(EventConstants.TOPIC_MONSTER_EVENT);
       long key = produceKey(worldId, channelId);
       producer.send(new ProducerRecord<>(topic, key,
-            new MonsterEvent(worldId, channelId, mapId, monsterId, MonsterEventType.CREATED)));
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, MonsterEventType.CREATED)));
    }
 
-   public void sendDestroyed(int worldId, int channelId, int mapId, int monsterId) {
+   public void sendDestroyed(int worldId, int channelId, int mapId, int uniqueId) {
       String topic = System.getenv(EventConstants.TOPIC_MONSTER_EVENT);
       long key = produceKey(worldId, channelId);
       producer.send(new ProducerRecord<>(topic, key,
-            new MonsterEvent(worldId, channelId, mapId, monsterId, MonsterEventType.DESTROYED)));
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, MonsterEventType.DESTROYED)));
    }
 
    protected Long produceKey(int worldId, int channelId) {

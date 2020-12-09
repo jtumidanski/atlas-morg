@@ -13,6 +13,7 @@ public final class ResultObjectFactory {
    public static ResultObjectBuilder create(Monster monster) {
       return new ResultObjectBuilder(MonsterAttributes.class, monster.uniqueId())
             .setAttribute(new MonsterAttributesBuilder()
+                  .setMapId(monster.mapId())
                   .setMonsterId(monster.monsterId())
                   .setControlCharacterId(monster.controlCharacterId())
                   .setX(monster.x())

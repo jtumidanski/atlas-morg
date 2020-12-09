@@ -28,7 +28,7 @@ public final class MonsterProcessor {
             .map(DataContainer::getData)
             .map(DataBody::getAttributes)
             .map(data -> com.atlas.morg.processor.MonsterProcessor.createMonster(worldId, channelId, mapId,
-                  attributes.monsterId(), attributes.x(), attributes.y(), attributes.fh(), attributes.stance(), attributes.team())
+                  attributes.monsterId(), attributes.x(), attributes.y(), attributes.fh(), 0, attributes.team())
             )
             .map(ResultObjectFactory::create)
             .map(Mappers::singleCreatedResult)

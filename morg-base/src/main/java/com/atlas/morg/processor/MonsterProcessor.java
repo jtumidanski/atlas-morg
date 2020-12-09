@@ -1,6 +1,7 @@
 package com.atlas.morg.processor;
 
 import com.atlas.morg.MonsterRegistry;
+import com.atlas.morg.event.producer.MonsterEventProducer;
 import com.atlas.morg.model.Monster;
 
 public final class MonsterProcessor {
@@ -9,7 +10,7 @@ public final class MonsterProcessor {
 
    public static Monster createMonster(int worldId, int channelId, int mapId, int monsterId) {
       Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId);
-      // TODO send monster spawn message.
+      MonsterEventProducer.getInstance().sendCreated(worldId, channelId, mapId, monsterId);
       return monster;
    }
 }

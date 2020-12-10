@@ -50,6 +50,7 @@ public class MonsterBuilder {
       this.fh = other.fh();
       this.stance = other.stance();
       this.team = other.team();
+      this.controlCharacterId = other.controlCharacterId();
    }
 
    public MonsterBuilder setX(Integer x) {

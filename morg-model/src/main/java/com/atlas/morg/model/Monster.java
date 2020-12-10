@@ -7,4 +7,12 @@ public record Monster(int worldId, int channelId, int mapId, int uniqueId, int m
    public Monster move(int endX, int endY, int stance) {
       return new MonsterBuilder(this).setX(endX).setY(endY).setStance(stance).build();
    }
+
+   public Monster control(int characterId) {
+      return new MonsterBuilder(this).setControlCharacterId(characterId).build();
+   }
+
+   public Monster clearControl() {
+      return new MonsterBuilder(this).setControlCharacterId(null).build();
+   }
 }

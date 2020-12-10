@@ -8,7 +8,7 @@ import com.atlas.morg.MonsterRegistry;
 public class MonsterMovementConsumer implements SimpleEventHandler<MonsterMovementEvent> {
    @Override
    public void handle(Long aLong, MonsterMovementEvent event) {
-      MonsterRegistry.getInstance().updateMonster(event.uniqueId(), event.endX(), event.endY(), event.stance());
+      MonsterRegistry.getInstance().moveMonster(event.uniqueId(), event.endX(), event.endY(), event.stance());
    }
 
    @Override

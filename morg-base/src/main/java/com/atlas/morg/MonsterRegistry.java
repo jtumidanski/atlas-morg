@@ -98,11 +98,29 @@ public class MonsterRegistry {
       return monsterLocks.get(uniqueId);
    }
 
-   public void updateMonster(int uniqueId, int endX, int endY, int stance) {
+   public void moveMonster(int uniqueId, int endX, int endY, int stance) {
       synchronized (getMonsterLock(uniqueId)) {
          if (monsterMap.containsKey(uniqueId)) {
             Monster monster = monsterMap.get(uniqueId);
             monsterMap.put(uniqueId, monster.move(endX, endY, stance));
+         }
+      }
+   }
+
+   public void controlMonster(int uniqueId, int characterId) {
+      synchronized (getMonsterLock(uniqueId)) {
+         if (monsterMap.containsKey(uniqueId)) {
+            Monster monster = monsterMap.get(uniqueId);
+            monsterMap.put(uniqueId, monster.control(characterId));
+         }
+      }
+   }
+
+   public void clearControl(int uniqueId) {
+      synchronized (getMonsterLock(uniqueId)) {
+         if (monsterMap.containsKey(uniqueId)) {
+            Monster monster = monsterMap.get(uniqueId);
+            monsterMap.put(uniqueId, monster.clearControl());
          }
       }
    }

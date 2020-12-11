@@ -1,7 +1,11 @@
 package com.atlas.morg.event.consumer;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.atlas.kafka.consumer.SimpleEventHandler;
 import com.atlas.morg.MonsterRegistry;
+import com.atlas.morg.model.Monster;
 import com.atlas.morg.processor.MonsterProcessor;
 import com.atlas.mrg.constant.EventConstants;
 import com.atlas.mrg.event.MapCharacterEvent;
@@ -18,18 +22,17 @@ public class MapCharacterConsumer implements SimpleEventHandler<MapCharacterEven
    private void gainControl(MapCharacterEvent event) {
       MonsterRegistry.getInstance().getMonstersInMap(event.worldId(), event.channelId(), event.mapId()).stream()
             .filter(monster -> monster.controlCharacterId() == null)
-            .forEach(monster -> MonsterProcessor
-                  .findNextController(event.worldId(), event.channelId(), event.mapId(), monster.uniqueId()));
+            .forEach(MonsterProcessor::findNextController);
    }
 
    private void removeControl(MapCharacterEvent event) {
-      MonsterRegistry.getInstance().getMonstersInMap(event.worldId(), event.channelId(), event.mapId()).stream()
+      Set<Monster> monsters = MonsterRegistry.getInstance()
+            .getMonstersInMap(event.worldId(), event.channelId(), event.mapId()).stream()
             .filter(monster -> monster.controlCharacterId() != null)
             .filter(monster -> monster.controlCharacterId() == event.characterId())
-            .forEach(monster -> {
-               MonsterProcessor.stopControl(monster.uniqueId());
-               MonsterProcessor.findNextController(event.worldId(), event.channelId(), event.mapId(), monster.uniqueId());
-            });
+            .collect(Collectors.toUnmodifiableSet());
+      monsters.forEach(MonsterProcessor::stopControl);
+      monsters.forEach(MonsterProcessor::findNextController);
    }
 
    @Override

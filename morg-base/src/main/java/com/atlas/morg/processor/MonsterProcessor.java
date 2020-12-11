@@ -19,7 +19,7 @@ public final class MonsterProcessor {
       Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId, x, y, fh, stance, team);
 
       getControllerCandidate(worldId, channelId, mapId)
-            .ifPresent(controllerId -> startControl(monster.uniqueId(), controllerId));
+            .ifPresent(controllerId -> startControl(monster, controllerId));
 
       MonsterEventProducer.getInstance().sendCreated(worldId, channelId, mapId, monster.uniqueId());
       return monster;
@@ -38,27 +38,23 @@ public final class MonsterProcessor {
             .map(Map.Entry::getKey);
    }
 
-   public static void findNextController(int worldId, int channelId, int mapId, int uniqueId) {
-      getControllerCandidate(worldId, channelId, mapId).ifPresent(id -> startControl(uniqueId, id));
+   public static void findNextController(Monster monster) {
+      getControllerCandidate(monster.worldId(), monster.channelId(), monster.mapId())
+            .ifPresent(id -> startControl(monster, id));
    }
 
-   public static void startControl(int uniqueId, int characterId) {
-      MonsterRegistry.getInstance().getMonster(uniqueId)
-            .ifPresent(monster -> {
-               if (monster.controlCharacterId() != null) {
-                  stopControl(monster.controlCharacterId());
-               }
-               MonsterRegistry.getInstance().controlMonster(uniqueId, characterId);
-               MonsterControlEventProducer.getInstance().sendControl(monster.worldId(), monster.channelId(), characterId, uniqueId);
-            });
+   public static void startControl(Monster monster, int characterId) {
+      if (monster.controlCharacterId() != null) {
+         stopControl(monster);
+      }
+      MonsterRegistry.getInstance().controlMonster(monster.uniqueId(), characterId);
+      MonsterControlEventProducer.getInstance()
+            .sendControl(monster.worldId(), monster.channelId(), characterId, monster.uniqueId());
    }
 
-   public static void stopControl(int uniqueId) {
-      MonsterRegistry.getInstance().getMonster(uniqueId)
-            .ifPresent(monster -> {
-               MonsterRegistry.getInstance().clearControl(uniqueId);
-               MonsterControlEventProducer.getInstance().clearControl(monster.worldId(), monster.channelId(),
-                     monster.controlCharacterId(), uniqueId);
-            });
+   public static void stopControl(Monster monster) {
+      MonsterRegistry.getInstance().clearControl(monster.uniqueId());
+      MonsterControlEventProducer.getInstance().clearControl(monster.worldId(), monster.channelId(),
+            monster.controlCharacterId(), monster.uniqueId());
    }
 }

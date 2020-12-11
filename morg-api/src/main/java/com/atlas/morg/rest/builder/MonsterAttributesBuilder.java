@@ -23,9 +23,11 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    private Integer team;
 
+   private Integer hp;
+
    @Override
    public MonsterAttributes construct() {
-      return new MonsterAttributes(mapId, monsterId, controlCharacterId, x, y, fh, stance, team);
+      return new MonsterAttributes(mapId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
    }
 
    @Override
@@ -70,6 +72,11 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    public MonsterAttributesBuilder setTeam(Integer team) {
       this.team = team;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setHp(Integer hp) {
+      this.hp = hp;
       return getThis();
    }
 }

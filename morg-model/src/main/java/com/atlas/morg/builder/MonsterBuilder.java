@@ -23,10 +23,12 @@ public class MonsterBuilder {
 
    private Integer team;
 
+   private Integer hp;
+
    private Integer controlCharacterId;
 
    public MonsterBuilder(Integer worldId, Integer channelId, Integer mapId, Integer uniqueId, Integer monsterId, Integer x,
-                         Integer y, Integer fh, Integer stance, Integer team) {
+                         Integer y, Integer fh, Integer stance, Integer team, Integer hp) {
       this.worldId = worldId;
       this.channelId = channelId;
       this.mapId = mapId;
@@ -37,6 +39,7 @@ public class MonsterBuilder {
       this.fh = fh;
       this.stance = stance;
       this.team = team;
+      this.hp = hp;
    }
 
    public MonsterBuilder(Monster other) {
@@ -50,6 +53,7 @@ public class MonsterBuilder {
       this.fh = other.fh();
       this.stance = other.stance();
       this.team = other.team();
+      this.hp = other.hp();
       this.controlCharacterId = other.controlCharacterId();
    }
 
@@ -83,7 +87,12 @@ public class MonsterBuilder {
       return this;
    }
 
+   public MonsterBuilder setHp(Integer hp) {
+      this.hp = hp;
+      return this;
+   }
+
    public Monster build() {
-      return new Monster(worldId, channelId, mapId, uniqueId, monsterId, controlCharacterId, x, y, fh, stance, team);
+      return new Monster(worldId, channelId, mapId, uniqueId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
    }
 }

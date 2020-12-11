@@ -15,8 +15,9 @@ public final class MonsterProcessor {
    }
 
    public static Monster createMonster(int worldId, int channelId, int mapId, int monsterId, int x, int y, int fh, int stance,
-                                       int team) {
-      Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId, x, y, fh, stance, team);
+                                       int team, int hp) {
+      Monster monster = MonsterRegistry.getInstance().createMonster(worldId, channelId, mapId, monsterId, x, y, fh, stance, team,
+            hp);
 
       getControllerCandidate(worldId, channelId, mapId)
             .ifPresent(controllerId -> startControl(monster, controllerId));

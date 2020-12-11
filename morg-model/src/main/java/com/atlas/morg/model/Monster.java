@@ -3,7 +3,7 @@ package com.atlas.morg.model;
 import com.atlas.morg.builder.MonsterBuilder;
 
 public record Monster(int worldId, int channelId, int mapId, int uniqueId, int monsterId, Integer controlCharacterId, int x, int y,
-                      int fh, int stance, int team) {
+                      int fh, int stance, int team, int hp) {
    public Monster move(int endX, int endY, int stance) {
       return new MonsterBuilder(this).setX(endX).setY(endY).setStance(stance).build();
    }
@@ -14,5 +14,13 @@ public record Monster(int worldId, int channelId, int mapId, int uniqueId, int m
 
    public Monster clearControl() {
       return new MonsterBuilder(this).setControlCharacterId(null).build();
+   }
+
+   public boolean alive() {
+      return hp > 0;
+   }
+
+   public Monster damage(int characterId, int damage) {
+      return new MonsterBuilder(this).setHp(Math.max(hp - damage, 0)).build();
    }
 }

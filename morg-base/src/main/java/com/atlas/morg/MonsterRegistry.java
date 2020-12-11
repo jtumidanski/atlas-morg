@@ -12,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.atlas.morg.builder.MonsterBuilder;
+import com.atlas.morg.model.DamageSummary;
 import com.atlas.morg.model.MapKey;
 import com.atlas.morg.model.Monster;
 
@@ -50,7 +51,8 @@ public class MonsterRegistry {
       monsterLocks = new ConcurrentHashMap<>();
    }
 
-   public Monster createMonster(int worldId, int channelId, int mapId, int monsterId, int x, int y, int fh, int stance, int team) {
+   public Monster createMonster(int worldId, int channelId, int mapId, int monsterId, int x, int y, int fh, int stance, int team,
+                                int hp) {
       synchronized (registryLock) {
          List<Integer> existingIds = new ArrayList<>(monsterMap.keySet());
          int currentUniqueId;
@@ -60,7 +62,7 @@ public class MonsterRegistry {
             }
          } while (existingIds.contains(currentUniqueId));
 
-         Monster monster = new MonsterBuilder(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team)
+         Monster monster = new MonsterBuilder(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team, hp)
                .build();
          monsterMap.put(monster.uniqueId(), monster);
 
@@ -122,6 +124,31 @@ public class MonsterRegistry {
             Monster monster = monsterMap.get(uniqueId);
             monsterMap.put(uniqueId, monster.clearControl());
          }
+      }
+   }
+
+   public Optional<DamageSummary> applyDamage(int characterId, int damage, int uniqueId) {
+      synchronized (getMonsterLock(uniqueId)) {
+         if (monsterMap.containsKey(uniqueId)) {
+            Monster monster = monsterMap.get(uniqueId);
+            Monster updatedMonster = monster.damage(characterId, damage);
+            monsterMap.put(uniqueId, updatedMonster);
+            return Optional.of(new DamageSummary(characterId, uniqueId, damage, monster.hp() - updatedMonster.hp(),
+                  updatedMonster.hp() == 0));
+         }
+         return Optional.empty();
+      }
+   }
+
+   public void removeMonster(int uniqueId) {
+      synchronized (getMonsterLock(uniqueId)) {
+
+         if (monsterMap.containsKey(uniqueId)) {
+            Monster monster = monsterMap.get(uniqueId);
+            monstersInMapMap.get(new MapKey(monster.worldId(), monster.channelId(), monster.mapId())).remove(monster.uniqueId());
+            monsterMap.remove(uniqueId);
+         }
+         monsterLocks.remove(uniqueId);
       }
    }
 }

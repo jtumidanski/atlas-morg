@@ -21,6 +21,7 @@ public final class ResultObjectFactory {
                   .setFh(monster.fh())
                   .setStance(monster.stance())
                   .setTeam(monster.team())
+                  .setHp(monster.hp())
             );
    }
 }

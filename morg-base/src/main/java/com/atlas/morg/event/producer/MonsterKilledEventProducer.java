@@ -21,7 +21,7 @@ public final class MonsterKilledEventProducer {
                   new MonsterKilledEvent(worldId, channelId, mapId, uniqueId, monsterId, x, y, killerId,
                         damageEntries
                               .stream()
-                              .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingInt(DamageEntry::damage)))
+                              .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingLong(DamageEntry::damage)))
                               .entrySet().stream()
                               .map(entry -> new com.atlas.morg.rest.event.DamageEntry(entry.getKey(), entry.getValue()))
                               .collect(Collectors.toList())

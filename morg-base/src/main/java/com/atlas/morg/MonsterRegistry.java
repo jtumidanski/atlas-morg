@@ -132,7 +132,7 @@ public class MonsterRegistry {
       }
    }
 
-   public Optional<DamageSummary> applyDamage(int characterId, int damage, int uniqueId) {
+   public Optional<DamageSummary> applyDamage(int characterId, long damage, int uniqueId) {
       synchronized (getMonsterLock(uniqueId)) {
          if (monsterMap.containsKey(uniqueId)) {
             Monster monster = monsterMap.get(uniqueId);

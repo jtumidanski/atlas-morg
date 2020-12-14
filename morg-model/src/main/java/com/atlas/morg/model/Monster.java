@@ -22,11 +22,11 @@ public record Monster(int worldId, int channelId, int mapId, int uniqueId, int m
       return hp > 0;
    }
 
-   public Monster damage(int characterId, int damage) {
-      int actualDamage = hp - Math.max(hp - damage, 0);
+   public Monster damage(int characterId, long damage) {
+      long actualDamage = hp - Math.max(hp - damage, 0);
 
       return new MonsterBuilder(this)
-            .setHp(hp - actualDamage)
+            .setHp(Long.valueOf(hp - actualDamage).intValue())
             .addDamageEntry(new DamageEntry(characterId, actualDamage))
             .build();
    }

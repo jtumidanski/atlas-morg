@@ -28,7 +28,7 @@ public final class ResultObjectFactory {
                   .setTeam(monster.team())
                   .setHp(monster.hp())
                   .setDamageEntries(monster.damageEntries().stream()
-                        .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingInt(DamageEntry::damage)))
+                        .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingLong(DamageEntry::damage)))
                         .entrySet().stream()
                         .map(entry -> new com.atlas.morg.rest.attribute.DamageEntry(entry.getKey(), entry.getValue()))
                         .collect(Collectors.toList())

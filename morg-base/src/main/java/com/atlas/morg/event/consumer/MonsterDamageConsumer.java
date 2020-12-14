@@ -19,7 +19,7 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
       System.out.printf("Monster %d damaged for %d by %d", event.uniqueId(), event.damage(), event.characterId());
    }
 
-   protected void applyDamage(int characterId, int damage, Monster monster) {
+   protected void applyDamage(int characterId, long damage, Monster monster) {
       MonsterRegistry.getInstance()
             .applyDamage(characterId, damage, monster.uniqueId())
             .ifPresent(summary -> {

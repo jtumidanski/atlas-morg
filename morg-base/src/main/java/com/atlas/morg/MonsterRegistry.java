@@ -1,6 +1,7 @@
 package com.atlas.morg;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -95,6 +96,10 @@ public class MonsterRegistry {
       return Collections.emptySet();
    }
 
+   public Collection<Monster> getMonsters() {
+      return Collections.unmodifiableCollection(monsterMap.values());
+   }
+
    protected Integer getMonsterLock(int uniqueId) {
       monsterLocks.putIfAbsent(uniqueId, uniqueId);
       return monsterLocks.get(uniqueId);
@@ -142,7 +147,6 @@ public class MonsterRegistry {
 
    public void removeMonster(int uniqueId) {
       synchronized (getMonsterLock(uniqueId)) {
-
          if (monsterMap.containsKey(uniqueId)) {
             Monster monster = monsterMap.get(uniqueId);
             monstersInMapMap.get(new MapKey(monster.worldId(), monster.channelId(), monster.mapId())).remove(monster.uniqueId());

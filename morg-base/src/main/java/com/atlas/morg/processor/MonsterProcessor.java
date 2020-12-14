@@ -57,4 +57,14 @@ public final class MonsterProcessor {
       MonsterControlEventProducer.clearControl(monster.worldId(), monster.channelId(),
             monster.controlCharacterId(), monster.uniqueId());
    }
+
+   public static void destroyAll() {
+      MonsterRegistry.getInstance().getMonsters().forEach(MonsterProcessor::destroyMonster);
+   }
+
+   protected static void destroyMonster(Monster monster) {
+      MonsterRegistry.getInstance().removeMonster(monster.uniqueId());
+      MonsterEventProducer.sendDestroyed(monster.worldId(), monster.channelId(), monster.mapId(), monster.uniqueId(),
+            monster.monsterId());
+   }
 }

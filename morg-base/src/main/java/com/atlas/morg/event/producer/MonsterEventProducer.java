@@ -36,21 +36,21 @@ public class MonsterEventProducer {
       String topic = System.getenv(EventConstants.TOPIC_MONSTER_EVENT);
       long key = produceKey(worldId, channelId);
       producer.send(new ProducerRecord<>(topic, key,
-            new MonsterEvent(worldId, channelId, mapId, uniqueId, MonsterEventType.CREATED)));
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, null, MonsterEventType.CREATED)));
    }
 
-   public void sendKilled(int worldId, int channelId, int mapId, int uniqueId) {
+   public void sendKilled(int worldId, int channelId, int mapId, int uniqueId, int killerId) {
       String topic = System.getenv(EventConstants.TOPIC_MONSTER_EVENT);
       long key = produceKey(worldId, channelId);
       producer.send(new ProducerRecord<>(topic, key,
-            new MonsterEvent(worldId, channelId, mapId, uniqueId, MonsterEventType.KILLED)));
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, killerId, MonsterEventType.KILLED)));
    }
 
    public void sendDestroyed(int worldId, int channelId, int mapId, int uniqueId) {
       String topic = System.getenv(EventConstants.TOPIC_MONSTER_EVENT);
       long key = produceKey(worldId, channelId);
       producer.send(new ProducerRecord<>(topic, key,
-            new MonsterEvent(worldId, channelId, mapId, uniqueId, MonsterEventType.DESTROYED)));
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, null, MonsterEventType.DESTROYED)));
    }
 
    protected Long produceKey(int worldId, int channelId) {

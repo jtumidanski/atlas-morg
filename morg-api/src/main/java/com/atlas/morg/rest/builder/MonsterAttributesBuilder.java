@@ -7,6 +7,10 @@ import builder.AttributeResultBuilder;
 
 public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, MonsterAttributesBuilder>
       implements AttributeResultBuilder {
+   private Integer worldId;
+
+   private Integer channelId;
+
    private Integer mapId;
 
    private Integer monsterId;
@@ -27,12 +31,22 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    @Override
    public MonsterAttributes construct() {
-      return new MonsterAttributes(mapId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
+      return new MonsterAttributes(worldId, channelId, mapId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
    }
 
    @Override
    public MonsterAttributesBuilder getThis() {
       return this;
+   }
+
+   public MonsterAttributesBuilder setWorldId(Integer worldId) {
+      this.worldId = worldId;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setChannelId(Integer channelId) {
+      this.channelId = channelId;
+      return getThis();
    }
 
    public MonsterAttributesBuilder setMapId(Integer mapId) {

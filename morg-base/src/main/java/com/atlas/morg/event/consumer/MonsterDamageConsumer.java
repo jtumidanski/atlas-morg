@@ -4,7 +4,7 @@ import com.atlas.csrv.constant.EventConstants;
 import com.atlas.csrv.event.MonsterDamageEvent;
 import com.atlas.kafka.consumer.SimpleEventHandler;
 import com.atlas.morg.MonsterRegistry;
-import com.atlas.morg.event.producer.MonsterEventProducer;
+import com.atlas.morg.event.producer.MonsterKilledEventProducer;
 import com.atlas.morg.model.DamageSummary;
 import com.atlas.morg.model.Monster;
 
@@ -31,8 +31,8 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
    }
 
    protected void killMonster(Monster monster, DamageSummary summary) {
-      MonsterEventProducer.getInstance().sendKilled(monster.worldId(), monster.channelId(), monster.mapId(), monster.uniqueId(),
-            summary.characterId());
+      MonsterKilledEventProducer.sendKilled(monster.worldId(), monster.channelId(), monster.mapId(), monster.uniqueId(),
+            monster.monsterId(), monster.x(), monster.y(), summary.characterId());
       MonsterRegistry.getInstance().removeMonster(monster.uniqueId());
    }
 

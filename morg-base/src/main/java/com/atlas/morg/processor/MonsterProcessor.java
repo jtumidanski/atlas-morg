@@ -22,7 +22,7 @@ public final class MonsterProcessor {
       getControllerCandidate(worldId, channelId, mapId)
             .ifPresent(controllerId -> startControl(monster, controllerId));
 
-      MonsterEventProducer.getInstance().sendCreated(worldId, channelId, mapId, monster.uniqueId());
+      MonsterEventProducer.sendCreated(worldId, channelId, mapId, monster.uniqueId(), monsterId);
       return monster;
    }
 
@@ -49,13 +49,12 @@ public final class MonsterProcessor {
          stopControl(monster);
       }
       MonsterRegistry.getInstance().controlMonster(monster.uniqueId(), characterId);
-      MonsterControlEventProducer.getInstance()
-            .sendControl(monster.worldId(), monster.channelId(), characterId, monster.uniqueId());
+      MonsterControlEventProducer.sendControl(monster.worldId(), monster.channelId(), characterId, monster.uniqueId());
    }
 
    public static void stopControl(Monster monster) {
       MonsterRegistry.getInstance().clearControl(monster.uniqueId());
-      MonsterControlEventProducer.getInstance().clearControl(monster.worldId(), monster.channelId(),
+      MonsterControlEventProducer.clearControl(monster.worldId(), monster.channelId(),
             monster.controlCharacterId(), monster.uniqueId());
    }
 }

@@ -16,7 +16,7 @@ public class MonsterResource {
    @Path("/{monsterId}")
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   public Response createMonsterInMap(@PathParam("monsterId") Integer monsterId) {
+   public Response getMonsterInMap(@PathParam("monsterId") Integer monsterId) {
       return MonsterProcessor.getMonster(monsterId).build();
    }
 }

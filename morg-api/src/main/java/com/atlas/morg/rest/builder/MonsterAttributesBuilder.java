@@ -1,6 +1,9 @@
 package com.atlas.morg.rest.builder;
 
+import java.util.List;
+
 import com.app.common.builder.RecordBuilder;
+import com.atlas.morg.rest.attribute.DamageEntry;
 import com.atlas.morg.rest.attribute.MonsterAttributes;
 
 import builder.AttributeResultBuilder;
@@ -29,9 +32,12 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    private Integer hp;
 
+   private List<DamageEntry> damageEntries;
+
    @Override
    public MonsterAttributes construct() {
-      return new MonsterAttributes(worldId, channelId, mapId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
+      return new MonsterAttributes(worldId, channelId, mapId, monsterId, controlCharacterId, x, y, fh, stance, team, hp,
+            damageEntries);
    }
 
    @Override
@@ -91,6 +97,11 @@ public class MonsterAttributesBuilder extends RecordBuilder<MonsterAttributes, M
 
    public MonsterAttributesBuilder setHp(Integer hp) {
       this.hp = hp;
+      return getThis();
+   }
+
+   public MonsterAttributesBuilder setDamageEntries(List<DamageEntry> damageEntries) {
+      this.damageEntries = damageEntries;
       return getThis();
    }
 }

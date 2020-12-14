@@ -1,5 +1,9 @@
 package com.atlas.morg.builder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.atlas.morg.model.DamageEntry;
 import com.atlas.morg.model.Monster;
 
 public class MonsterBuilder {
@@ -27,6 +31,8 @@ public class MonsterBuilder {
 
    private Integer controlCharacterId;
 
+   private List<DamageEntry> damageEntries;
+
    public MonsterBuilder(Integer worldId, Integer channelId, Integer mapId, Integer uniqueId, Integer monsterId, Integer x,
                          Integer y, Integer fh, Integer stance, Integer team, Integer hp) {
       this.worldId = worldId;
@@ -40,6 +46,7 @@ public class MonsterBuilder {
       this.stance = stance;
       this.team = team;
       this.hp = hp;
+      this.damageEntries = new ArrayList<>();
    }
 
    public MonsterBuilder(Monster other) {
@@ -55,6 +62,7 @@ public class MonsterBuilder {
       this.team = other.team();
       this.hp = other.hp();
       this.controlCharacterId = other.controlCharacterId();
+      this.damageEntries = other.damageEntries();
    }
 
    public MonsterBuilder setX(Integer x) {
@@ -92,7 +100,13 @@ public class MonsterBuilder {
       return this;
    }
 
+   public MonsterBuilder addDamageEntry(DamageEntry entry) {
+      this.damageEntries.add(entry);
+      return this;
+   }
+
    public Monster build() {
-      return new Monster(worldId, channelId, mapId, uniqueId, monsterId, controlCharacterId, x, y, fh, stance, team, hp);
+      return new Monster(worldId, channelId, mapId, uniqueId, monsterId, controlCharacterId, x, y, fh, stance, team, hp,
+            damageEntries);
    }
 }

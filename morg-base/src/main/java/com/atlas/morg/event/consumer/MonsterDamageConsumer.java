@@ -32,7 +32,7 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
 
    protected void killMonster(Monster monster, DamageSummary summary) {
       MonsterKilledEventProducer.sendKilled(monster.worldId(), monster.channelId(), monster.mapId(), monster.uniqueId(),
-            monster.monsterId(), monster.x(), monster.y(), summary.characterId());
+            monster.monsterId(), monster.x(), monster.y(), summary.characterId(), monster.damageEntries());
       MonsterRegistry.getInstance().removeMonster(monster.uniqueId());
    }
 

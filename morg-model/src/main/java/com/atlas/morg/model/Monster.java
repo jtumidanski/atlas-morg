@@ -1,9 +1,11 @@
 package com.atlas.morg.model;
 
+import java.util.List;
+
 import com.atlas.morg.builder.MonsterBuilder;
 
 public record Monster(int worldId, int channelId, int mapId, int uniqueId, int monsterId, Integer controlCharacterId, int x, int y,
-                      int fh, int stance, int team, int hp) {
+                      int fh, int stance, int team, int hp, List<DamageEntry> damageEntries) {
    public Monster move(int endX, int endY, int stance) {
       return new MonsterBuilder(this).setX(endX).setY(endY).setStance(stance).build();
    }
@@ -21,6 +23,11 @@ public record Monster(int worldId, int channelId, int mapId, int uniqueId, int m
    }
 
    public Monster damage(int characterId, int damage) {
-      return new MonsterBuilder(this).setHp(Math.max(hp - damage, 0)).build();
+      int actualDamage = hp - Math.max(hp - damage, 0);
+
+      return new MonsterBuilder(this)
+            .setHp(hp - actualDamage)
+            .addDamageEntry(new DamageEntry(characterId, actualDamage))
+            .build();
    }
 }

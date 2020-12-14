@@ -13,7 +13,7 @@ import java.net.URI;
 
 public class Server {
    public static void main(String[] args) {
-      Runtime.getRuntime().addShutdownHook(new Thread(() -> MonsterProcessor.destroyAll()));
+      Runtime.getRuntime().addShutdownHook(new Thread(MonsterProcessor::destroyAll));
 
       SimpleEventConsumerFactory.create(new MonsterMovementConsumer());
       SimpleEventConsumerFactory.create(new MapCharacterConsumer());

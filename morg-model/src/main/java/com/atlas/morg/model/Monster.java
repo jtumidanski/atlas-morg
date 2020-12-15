@@ -1,6 +1,9 @@
 package com.atlas.morg.model;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.atlas.morg.builder.MonsterBuilder;
 
@@ -29,5 +32,17 @@ public record Monster(int worldId, int channelId, int mapId, int uniqueId, int m
             .setHp(Long.valueOf(hp - actualDamage).intValue())
             .addDamageEntry(new DamageEntry(characterId, actualDamage))
             .build();
+   }
+
+   public List<DamageEntry> damageSummary() {
+      return damageEntries().stream()
+            .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingLong(DamageEntry::damage)))
+            .entrySet().stream()
+            .map(entry -> new DamageEntry(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList());
+   }
+
+   public Optional<DamageEntry> damageLeader() {
+      return damageSummary().stream().max(Comparator.comparing(DamageEntry::damage));
    }
 }

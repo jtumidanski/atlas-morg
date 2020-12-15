@@ -2,7 +2,6 @@ package com.atlas.morg.rest;
 
 import java.util.stream.Collectors;
 
-import com.atlas.morg.model.DamageEntry;
 import com.atlas.morg.model.Monster;
 import com.atlas.morg.rest.attribute.MonsterAttributes;
 import com.atlas.morg.rest.builder.MonsterAttributesBuilder;
@@ -27,10 +26,8 @@ public final class ResultObjectFactory {
                   .setStance(monster.stance())
                   .setTeam(monster.team())
                   .setHp(monster.hp())
-                  .setDamageEntries(monster.damageEntries().stream()
-                        .collect(Collectors.groupingBy(DamageEntry::characterId, Collectors.summingLong(DamageEntry::damage)))
-                        .entrySet().stream()
-                        .map(entry -> new com.atlas.morg.rest.attribute.DamageEntry(entry.getKey(), entry.getValue()))
+                  .setDamageEntries(monster.damageSummary().stream()
+                        .map(entry -> new com.atlas.morg.rest.attribute.DamageEntry(entry.characterId(), entry.damage()))
                         .collect(Collectors.toList())
                   )
             );

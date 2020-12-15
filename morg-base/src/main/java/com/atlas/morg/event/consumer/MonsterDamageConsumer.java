@@ -7,6 +7,7 @@ import com.atlas.morg.MonsterRegistry;
 import com.atlas.morg.event.producer.MonsterKilledEventProducer;
 import com.atlas.morg.model.DamageSummary;
 import com.atlas.morg.model.Monster;
+import com.atlas.morg.processor.TopicDiscoveryProcessor;
 
 public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEvent> {
    @Override
@@ -53,6 +54,6 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
 
    @Override
    public String getTopic() {
-      return System.getenv(EventConstants.TOPIC_MONSTER_DAMAGE);
+      return TopicDiscoveryProcessor.getTopic(EventConstants.TOPIC_MONSTER_DAMAGE);
    }
 }

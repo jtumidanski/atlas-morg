@@ -7,6 +7,7 @@ import com.atlas.kafka.consumer.SimpleEventHandler;
 import com.atlas.morg.MonsterRegistry;
 import com.atlas.morg.model.Monster;
 import com.atlas.morg.processor.MonsterProcessor;
+import com.atlas.morg.processor.TopicDiscoveryProcessor;
 import com.atlas.mrg.constant.EventConstants;
 import com.atlas.mrg.event.MapCharacterEvent;
 
@@ -52,6 +53,6 @@ public class MapCharacterConsumer implements SimpleEventHandler<MapCharacterEven
 
    @Override
    public String getTopic() {
-      return System.getenv(EventConstants.TOPIC_MAP_CHARACTER_EVENT);
+      return TopicDiscoveryProcessor.getTopic(EventConstants.TOPIC_MAP_CHARACTER_EVENT);
    }
 }

@@ -1,15 +1,16 @@
 package com.atlas.morg;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.atlas.kafka.KafkaProducerFactory;
+import com.atlas.morg.processor.TopicDiscoveryProcessor;
 import com.atlas.morg.rest.event.MonsterControlEvent;
 import com.atlas.morg.rest.event.MonsterEvent;
 import com.atlas.morg.rest.event.MonsterKilledEvent;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class EventProducerRegistry {
    private static final Object lock = new Object();
@@ -17,6 +18,8 @@ public class EventProducerRegistry {
    private static volatile EventProducerRegistry instance;
 
    private final Map<Class<?>, Producer<Long, ?>> producerMap;
+
+   private final Map<String, String> topicMap;
 
    public static EventProducerRegistry getInstance() {
       EventProducerRegistry result = instance;
@@ -40,11 +43,19 @@ public class EventProducerRegistry {
             KafkaProducerFactory.createProducer("Monster Registry", System.getenv("BOOTSTRAP_SERVERS")));
       producerMap.put(MonsterKilledEvent.class,
             KafkaProducerFactory.createProducer("Monster Registry", System.getenv("BOOTSTRAP_SERVERS")));
+      topicMap = new HashMap<>();
    }
 
    public <T> void send(Class<T> clazz, String topic, int worldId, int channelId, T event) {
-      ProducerRecord<Long, T> record = new ProducerRecord<>(System.getenv(topic), produceKey(worldId, channelId), event);
+      ProducerRecord<Long, T> record = new ProducerRecord<>(getTopic(topic), produceKey(worldId, channelId), event);
       getProducer(clazz).ifPresent(producer -> producer.send(record));
+   }
+
+   protected String getTopic(String id) {
+      if (!topicMap.containsKey(id)) {
+         topicMap.put(id, TopicDiscoveryProcessor.getTopic(id));
+      }
+      return topicMap.get(id);
    }
 
    protected <T> Optional<Producer<Long, T>> getProducer(Class<T> clazz) {

@@ -4,6 +4,7 @@ import com.atlas.csrv.constant.EventConstants;
 import com.atlas.csrv.event.MonsterMovementEvent;
 import com.atlas.kafka.consumer.SimpleEventHandler;
 import com.atlas.morg.MonsterRegistry;
+import com.atlas.morg.processor.TopicDiscoveryProcessor;
 
 public class MonsterMovementConsumer implements SimpleEventHandler<MonsterMovementEvent> {
    @Override
@@ -28,6 +29,6 @@ public class MonsterMovementConsumer implements SimpleEventHandler<MonsterMoveme
 
    @Override
    public String getTopic() {
-      return System.getenv(EventConstants.TOPIC_MONSTER_MOVEMENT);
+      return TopicDiscoveryProcessor.getTopic(EventConstants.TOPIC_MONSTER_MOVEMENT);
    }
 }

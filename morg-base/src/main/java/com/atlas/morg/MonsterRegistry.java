@@ -138,7 +138,7 @@ public class MonsterRegistry {
             Monster monster = monsterMap.get(uniqueId);
             Monster updatedMonster = monster.damage(characterId, damage);
             monsterMap.put(uniqueId, updatedMonster);
-            return Optional.of(new DamageSummary(characterId, uniqueId, damage, monster.hp() - updatedMonster.hp(),
+            return Optional.of(new DamageSummary(characterId, updatedMonster, damage, monster.hp() - updatedMonster.hp(),
                   updatedMonster.hp() == 0));
          }
          return Optional.empty();

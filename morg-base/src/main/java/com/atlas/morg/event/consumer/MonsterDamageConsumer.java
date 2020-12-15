@@ -5,8 +5,10 @@ import com.atlas.csrv.event.MonsterDamageEvent;
 import com.atlas.kafka.consumer.SimpleEventHandler;
 import com.atlas.morg.MonsterRegistry;
 import com.atlas.morg.event.producer.MonsterKilledEventProducer;
+import com.atlas.morg.model.DamageEntry;
 import com.atlas.morg.model.DamageSummary;
 import com.atlas.morg.model.Monster;
+import com.atlas.morg.processor.MonsterProcessor;
 import com.atlas.morg.processor.TopicDiscoveryProcessor;
 
 public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEvent> {
@@ -24,6 +26,17 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
       MonsterRegistry.getInstance()
             .applyDamage(characterId, damage, monster.uniqueId())
             .ifPresent(summary -> {
+               if (characterId != summary.monster().controlCharacterId()) {
+                  boolean damageLeader = summary.monster().damageLeader()
+                        .map(DamageEntry::characterId)
+                        .filter(id -> id == characterId)
+                        .isPresent();
+                  if (damageLeader) {
+                     MonsterProcessor.stopControl(summary.monster());
+                     MonsterProcessor.startControl(summary.monster(), characterId);
+                  }
+               }
+
                // TODO broadcast HP bar update
                if (summary.killed()) {
                   killMonster(monster, summary);
@@ -33,7 +46,7 @@ public class MonsterDamageConsumer implements SimpleEventHandler<MonsterDamageEv
 
    protected void killMonster(Monster monster, DamageSummary summary) {
       MonsterKilledEventProducer.sendKilled(monster.worldId(), monster.channelId(), monster.mapId(), monster.uniqueId(),
-            monster.monsterId(), monster.x(), monster.y(), summary.characterId(), monster.damageEntries());
+            monster.monsterId(), monster.x(), monster.y(), summary.characterId(), monster.damageSummary());
       MonsterRegistry.getInstance().removeMonster(monster.uniqueId());
    }
 

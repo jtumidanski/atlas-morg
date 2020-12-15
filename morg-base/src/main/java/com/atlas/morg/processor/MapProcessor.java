@@ -21,7 +21,7 @@ public class MapProcessor {
             .getRestClient(MapCharacterAttributes.class)
             .getWithResponse()
             .result()
-            .map(DataContainer::getDataAsList)
+            .map(DataContainer::dataList)
             .orElse(Collections.emptyList())
             .stream()
             .map(DataBody::getId)

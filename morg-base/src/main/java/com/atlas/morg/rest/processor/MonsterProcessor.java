@@ -25,7 +25,7 @@ public final class MonsterProcessor {
             .getRestClient(MonsterDataAttributes.class)
             .getWithResponse()
             .result()
-            .map(DataContainer::getData)
+            .flatMap(DataContainer::data)
             .map(DataBody::getAttributes)
             .map(data -> com.atlas.morg.processor.MonsterProcessor.createMonster(worldId, channelId, mapId,
                   attributes.monsterId(), attributes.x(), attributes.y(), attributes.fh(), 5, attributes.team(),

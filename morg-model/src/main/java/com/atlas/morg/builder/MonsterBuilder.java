@@ -31,7 +31,7 @@ public class MonsterBuilder {
 
    private Integer controlCharacterId;
 
-   private List<DamageEntry> damageEntries;
+   private final List<DamageEntry> damageEntries;
 
    public MonsterBuilder(Integer worldId, Integer channelId, Integer mapId, Integer uniqueId, Integer monsterId, Integer x,
                          Integer y, Integer fh, Integer stance, Integer team, Integer hp) {

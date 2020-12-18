@@ -27,7 +27,7 @@ public final class MonsterProcessor {
    }
 
    protected static Optional<Integer> getControllerCandidate(int worldId, int channelId, int mapId) {
-      Map<Integer, Integer> controllerCounts = MapProcessor.getCharacterIdsInMap(worldId, channelId, mapId).stream()
+      Map<Integer, Integer> controllerCounts = MapProcessor.getCharacterIdsInMap(worldId, channelId, mapId)
             .collect(Collectors.toMap(id -> id, id -> 0));
       controllerCounts.putAll(
             MonsterRegistry.getInstance().getMonstersInMap(worldId, channelId, mapId).stream()

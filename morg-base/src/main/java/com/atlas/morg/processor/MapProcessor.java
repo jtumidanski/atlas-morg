@@ -1,8 +1,7 @@
 package com.atlas.morg.processor;
 
 import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.atlas.mrg.rest.attribute.MapCharacterAttributes;
 import com.atlas.shared.rest.RestService;
@@ -12,7 +11,7 @@ import rest.DataBody;
 import rest.DataContainer;
 
 public class MapProcessor {
-   public static List<Integer> getCharacterIdsInMap(int worldId, int channelId, int mapId) {
+   public static Stream<Integer> getCharacterIdsInMap(int worldId, int channelId, int mapId) {
       return UriBuilder.service(RestService.MAP_REGISTRY)
             .pathParam("worlds", worldId)
             .pathParam("channels", channelId)
@@ -25,7 +24,6 @@ public class MapProcessor {
             .orElse(Collections.emptyList())
             .stream()
             .map(DataBody::getId)
-            .map(Integer::parseInt)
-            .collect(Collectors.toList());
+            .map(Integer::parseInt);
    }
 }

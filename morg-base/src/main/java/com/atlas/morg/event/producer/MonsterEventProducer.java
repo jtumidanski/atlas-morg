@@ -10,14 +10,12 @@ public final class MonsterEventProducer {
    }
 
    public static void sendCreated(int worldId, int channelId, int mapId, int uniqueId, int monsterId) {
-      EventProducerRegistry.getInstance()
-            .send(MonsterEvent.class, EventConstants.TOPIC_MONSTER_EVENT, worldId, channelId,
-                  new MonsterEvent(worldId, channelId, mapId, uniqueId, monsterId, null, MonsterEventType.CREATED));
+      EventProducerRegistry.getInstance().send(EventConstants.TOPIC_MONSTER_EVENT, uniqueId,
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, monsterId, null, MonsterEventType.CREATED));
    }
 
    public static void sendDestroyed(int worldId, int channelId, int mapId, int uniqueId, int monsterId) {
-      EventProducerRegistry.getInstance()
-            .send(MonsterEvent.class, EventConstants.TOPIC_MONSTER_EVENT, worldId, channelId,
-                  new MonsterEvent(worldId, channelId, mapId, uniqueId, monsterId, null, MonsterEventType.DESTROYED));
+      EventProducerRegistry.getInstance().send(EventConstants.TOPIC_MONSTER_EVENT, uniqueId,
+            new MonsterEvent(worldId, channelId, mapId, uniqueId, monsterId, null, MonsterEventType.DESTROYED));
    }
 }

@@ -15,9 +15,7 @@ public final class MonsterKilledEventProducer {
    public static void sendKilled(int worldId, int channelId, int mapId, int uniqueId, int monsterId, int x, int y, int killerId,
                                  List<DamageEntry> damageSummary) {
       EventProducerRegistry.getInstance()
-            .send(MonsterKilledEvent.class,
-                  EventConstants.TOPIC_MONSTER_KILLED_EVENT,
-                  worldId, channelId,
+            .send(EventConstants.TOPIC_MONSTER_KILLED_EVENT, uniqueId,
                   new MonsterKilledEvent(worldId, channelId, mapId, uniqueId, monsterId, x, y, killerId,
                         damageSummary.stream()
                               .map(entry -> new com.atlas.morg.rest.event.DamageEntry(entry.characterId(), entry.damage()))

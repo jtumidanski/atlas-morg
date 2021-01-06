@@ -10,14 +10,12 @@ public final class MonsterControlEventProducer {
    }
 
    public static void sendControl(int worldId, int channelId, int characterId, int uniqueId) {
-      EventProducerRegistry.getInstance()
-            .send(MonsterControlEvent.class, EventConstants.TOPIC_CONTROL_MONSTER_EVENT, worldId, channelId,
-                  new MonsterControlEvent(worldId, channelId, characterId, uniqueId, MonsterControlEventType.START));
+      EventProducerRegistry.getInstance().send(EventConstants.TOPIC_CONTROL_MONSTER_EVENT, uniqueId,
+            new MonsterControlEvent(worldId, channelId, characterId, uniqueId, MonsterControlEventType.START));
    }
 
    public static void clearControl(int worldId, int channelId, int mapId, int uniqueId) {
-      EventProducerRegistry.getInstance()
-            .send(MonsterControlEvent.class, EventConstants.TOPIC_CONTROL_MONSTER_EVENT, worldId, channelId,
-                  new MonsterControlEvent(worldId, channelId, mapId, uniqueId, MonsterControlEventType.STOP));
+      EventProducerRegistry.getInstance().send(EventConstants.TOPIC_CONTROL_MONSTER_EVENT, uniqueId,
+            new MonsterControlEvent(worldId, channelId, mapId, uniqueId, MonsterControlEventType.STOP));
    }
 }

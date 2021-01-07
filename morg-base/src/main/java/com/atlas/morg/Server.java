@@ -1,15 +1,15 @@
 package com.atlas.morg;
 
+import java.net.URI;
+
 import com.atlas.kafka.consumer.SimpleEventConsumerFactory;
 import com.atlas.morg.event.consumer.MapCharacterConsumer;
 import com.atlas.morg.event.consumer.MonsterDamageConsumer;
 import com.atlas.morg.event.consumer.MonsterMovementConsumer;
 import com.atlas.morg.processor.MonsterProcessor;
+import com.atlas.morg.rest.constant.RestConstants;
 import com.atlas.shared.rest.RestServerFactory;
-import com.atlas.shared.rest.RestService;
 import com.atlas.shared.rest.UriBuilder;
-
-import java.net.URI;
 
 public class Server {
    public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class Server {
       SimpleEventConsumerFactory.create(new MapCharacterConsumer());
       SimpleEventConsumerFactory.create(new MonsterDamageConsumer());
 
-      URI uri = UriBuilder.host(RestService.MONSTER_REGISTRY).uri();
+      URI uri = UriBuilder.host(RestConstants.SERVICE).uri();
       RestServerFactory.create(uri, "com.atlas.morg.rest");
    }
 }

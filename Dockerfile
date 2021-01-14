@@ -13,7 +13,7 @@ COPY morg-api/src morg-api/src
 COPY morg-model/src morg-model/src
 COPY morg-base/src morg-base/src
 
-RUN mvn install
+RUN mvn install -Prunnable
 
 FROM openjdk:14-ea-jdk-alpine
 USER root

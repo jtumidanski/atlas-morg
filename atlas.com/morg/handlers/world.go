@@ -3,7 +3,7 @@ package handlers
 import (
 	"atlas-morg/attributes"
 	"atlas-morg/models"
-	processor "atlas-morg/processors"
+	"atlas-morg/processors"
 	"atlas-morg/registries"
 	"github.com/gorilla/mux"
 	"log"
@@ -40,10 +40,18 @@ func (w *World) GetMonstersInMap(rw http.ResponseWriter, r *http.Request) {
 
 func (w *World) CreateMonsterInMap(rw http.ResponseWriter, r *http.Request) {
 	input := r.Context().Value(KeyWorld{}).(attributes.MonsterInputDataContainer).Data.Attributes
-	m, err := processor.NewMonster(w.l).CreateMonster(getWorldId(r), getChannelId(r), getMapId(r), &input)
+	m, err := processors.NewMonster(w.l).CreateMonster(getWorldId(r), getChannelId(r), getMapId(r), &input)
 	if err != nil {
 		rw.WriteHeader(http.StatusBadRequest)
 		return
+	}
+	var response attributes.MonsterDataContainer
+	response.Data = getMonsterResponseObject(m)
+
+	err = attributes.ToJSON(response, rw)
+	if err != nil {
+		w.l.Println("Error encoding GetMonstersInMap response")
+		rw.WriteHeader(http.StatusInternalServerError)
 	}
 }
 

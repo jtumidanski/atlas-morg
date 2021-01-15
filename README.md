@@ -1,2 +1,0 @@
-# atlas-morg
-Monster Registry

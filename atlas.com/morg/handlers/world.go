@@ -39,8 +39,8 @@ func (w *World) GetMonstersInMap(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (w *World) CreateMonsterInMap(rw http.ResponseWriter, r *http.Request) {
-	input := r.Context().Value(KeyWorld{}).(attributes.MonsterInputDataContainer).Data.Attributes
-	m, err := processors.NewMonster(w.l).CreateMonster(getWorldId(r), getChannelId(r), getMapId(r), &input)
+	input := r.Context().Value(KeyWorld{}).(attributes.MonsterInputDataContainer)
+	m, err := processors.NewMonster(w.l).CreateMonster(getWorldId(r), getChannelId(r), getMapId(r), &input.Data.Attributes)
 	if err != nil {
 		rw.WriteHeader(http.StatusBadRequest)
 		return

@@ -1,6 +1,6 @@
 package events
 
 type DamageEntry struct {
-   CharacterId int   `json:"characterId"`
-   Damage      int64 `json:"damage"`
+	Character int   `json:"character"`
+	Damage    int64 `json:"damage"`
 }

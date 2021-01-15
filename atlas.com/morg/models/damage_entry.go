@@ -1,6 +1,6 @@
 package models
 
 type DamageEntry struct {
-   CharacterId int
-   Damage      int64
+	CharacterId int
+	Damage      int64
 }

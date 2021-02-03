@@ -63,6 +63,11 @@ func (mc *MonsterDamage) processEvent(event events.MonsterDamageEvent) {
 func (mc *MonsterDamage) applyDamage(characterId int, damage int64, m *models.Monster) {
 	s, err := registries.GetMonsterRegistry().ApplyDamage(characterId, damage, m.UniqueId())
 	if err == nil {
+		if s.Killed {
+			mc.killMonster(s)
+			return
+		}
+
 		if characterId != s.Monster.ControlCharacterId() {
 			dl := s.Monster.DamageLeader() == characterId
 			if dl {
@@ -72,9 +77,6 @@ func (mc *MonsterDamage) applyDamage(characterId int, damage int64, m *models.Mo
 		}
 
 		// TODO broadcast HP bar update
-		if s.Killed {
-			mc.killMonster(s)
-		}
 	}
 }
 

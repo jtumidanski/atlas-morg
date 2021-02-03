@@ -67,6 +67,7 @@ func (mk *MonsterKilled) EmitKilled(worldId byte, channelId byte, mapId int, uni
 		Value: r,
 	})
 	if err != nil {
-		mk.l.Fatal("[ERROR] Unable to produce event.")
+		mk.l.Print(err.Error())
+		mk.l.Fatal("[ERROR] Unable to produce monster killed event.")
 	}
 }

@@ -60,7 +60,8 @@ func (m *MonsterControl) emit(worldId byte, channelId byte, mapId int, character
 		Value: r,
 	})
 	if err != nil {
-		m.l.Fatal("[ERROR] Unable to produce event.")
+		m.l.Print(err.Error())
+		m.l.Fatal("[ERROR] Unable to produce monster control event.")
 	}
 }
 

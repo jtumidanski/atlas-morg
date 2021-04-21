@@ -1,6 +1,6 @@
 if [[ "$1" = "NO-CACHE" ]]
 then
-   docker build -f Dockerfile.dev --no-cache --tag atlas-morg:latest .
+   docker build --no-cache -f Dockerfile.dev --tag ${PWD##*/}:latest .
 else
-   docker build -f Dockerfile.dev --tag atlas-morg:latest .
+   docker build -f Dockerfile.dev --tag ${PWD##*/}:latest .
 fi

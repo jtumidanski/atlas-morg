@@ -60,7 +60,7 @@ func contains(ids []int, id int) bool {
 	return false
 }
 
-func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId int, monsterId int, x int, y int, fh int, stance int, team int, hp int) *Model {
+func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId int, monsterId int, x int, y int, fh int, stance int, team int, hp int, mp int) *Model {
 
 	r.monsterRegisterRWLock.Lock()
 	var existingIds = existingIds(r.monsterRegister)
@@ -74,7 +74,7 @@ func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId int, monste
 		uniqueId = currentUniqueId
 	}
 
-	m := NewMonster(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team, hp)
+	m := NewMonster(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team, hp, mp)
 
 	r.monsterRegister[uniqueId] = *m
 	r.monsterRegisterRWLock.Unlock()

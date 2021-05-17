@@ -132,7 +132,10 @@ func getMonsterResponseObject(m *monster.Model) attributes.MonsterData {
 			Fh:                 m.Fh(),
 			Stance:             m.Stance(),
 			Team:               m.Team(),
+			MaxHp:              m.MaxHp(),
 			Hp:                 m.Hp(),
+			MaxMp:              m.MaxMp(),
+			Mp:                 m.Mp(),
 			DamageEntries:      monsterDamage,
 		},
 	}

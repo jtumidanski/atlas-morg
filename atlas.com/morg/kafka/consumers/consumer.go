@@ -79,7 +79,7 @@ func (c Consumer) Init() {
 				if err != nil {
 					c.l.WithError(err).Errorf("Could not unmarshal event into %s.", val.Value)
 				} else {
-					c.h(c.l, event)
+					go c.h(c.l, event)
 				}
 			} else {
 				c.l.Errorf("Message received not a valid kafka message.")

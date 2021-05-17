@@ -10,7 +10,10 @@ type Model struct {
 	worldId            byte
 	channelId          byte
 	mapId              int
+	maxHp              int
 	hp                 int
+	maxMp              int
+	mp                 int
 	monsterId          int
 	controlCharacterId int
 	x                  int
@@ -21,13 +24,16 @@ type Model struct {
 	damageEntries      []models.DamageEntry
 }
 
-func NewMonster(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp int) *Model {
+func NewMonster(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp int, mp int) *Model {
 	return &Model{
 		uniqueId:           uniqueId,
 		worldId:            worldId,
 		channelId:          channelId,
 		mapId:              mapId,
+		maxHp:              hp,
 		hp:                 hp,
+		maxMp:              mp,
+		mp:                 mp,
 		monsterId:          monsterId,
 		controlCharacterId: 0,
 		x:                  x,
@@ -117,7 +123,10 @@ func (m *Model) Move(x int, y int, stance int) *Model {
 		worldId:            m.WorldId(),
 		channelId:          m.ChannelId(),
 		mapId:              m.MapId(),
+		maxHp:              m.MaxHp(),
 		hp:                 m.Hp(),
+		maxMp:              m.MaxMp(),
+		mp:                 m.Mp(),
 		monsterId:          m.MonsterId(),
 		controlCharacterId: m.ControlCharacterId(),
 		x:                  x,
@@ -135,7 +144,10 @@ func (m *Model) Control(characterId int) *Model {
 		worldId:            m.WorldId(),
 		channelId:          m.ChannelId(),
 		mapId:              m.MapId(),
+		maxHp:              m.MaxHp(),
 		hp:                 m.Hp(),
+		maxMp:              m.MaxMp(),
+		mp:                 m.Mp(),
 		monsterId:          m.MonsterId(),
 		controlCharacterId: characterId,
 		x:                  m.X(),
@@ -153,7 +165,10 @@ func (m *Model) ClearControl() *Model {
 		worldId:            m.WorldId(),
 		channelId:          m.ChannelId(),
 		mapId:              m.MapId(),
+		maxHp:              m.MaxHp(),
 		hp:                 m.Hp(),
+		maxMp:              m.MaxMp(),
+		mp:                 m.Mp(),
 		monsterId:          m.MonsterId(),
 		controlCharacterId: 0,
 		x:                  m.X(),
@@ -173,7 +188,10 @@ func (m *Model) Damage(characterId int, damage int64) *Model {
 		worldId:            m.WorldId(),
 		channelId:          m.ChannelId(),
 		mapId:              m.MapId(),
+		maxHp:              m.MaxHp(),
 		hp:                 m.Hp() - int(actualDamage),
+		maxMp:              m.MaxMp(),
+		mp:                 m.Mp(),
 		monsterId:          m.MonsterId(),
 		controlCharacterId: m.ControlCharacterId(),
 		x:                  m.X(),
@@ -202,4 +220,16 @@ func (m *Model) DamageLeader() int {
 		}
 	}
 	return m.damageEntries[index].CharacterId
+}
+
+func (m *Model) MaxHp() int {
+	return m.maxHp
+}
+
+func (m *Model) MaxMp() int {
+	return m.maxMp
+}
+
+func (m *Model) Mp() int {
+	return m.mp
 }

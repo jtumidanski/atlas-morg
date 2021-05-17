@@ -29,7 +29,10 @@ type MonsterAttributes struct {
 	Fh                 int             `json:"fh"`
 	Stance             int             `json:"stance"`
 	Team               int             `json:"team"`
+	MaxHp              int             `json:"maxHp"`
 	Hp                 int             `json:"hp"`
+	MaxMp              int             `json:"maxMp"`
+	Mp                 int             `json:"mp"`
 	DamageEntries      []MonsterDamage `json:"damageEntries"`
 }
 

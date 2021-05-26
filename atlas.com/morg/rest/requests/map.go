@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"atlas-morg/json"
 	"atlas-morg/rest/attributes"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -24,7 +25,7 @@ func (m *Map) GetCharacterIdsInMap(worldId byte, channelId byte, mapId int) ([]i
 	}
 
 	td := &attributes.MapCharactersListDataContainer{}
-	err = attributes.FromJSON(td, r.Body)
+	err = json.FromJSON(td, r.Body)
 	if err != nil {
 		m.l.WithError(err).Errorf("Decoding information for characters in the map")
 		return nil, err

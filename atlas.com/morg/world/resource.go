@@ -1,6 +1,7 @@
 package world
 
 import (
+	json2 "atlas-morg/json"
 	"atlas-morg/monster"
 	attributes "atlas-morg/rest/attributes"
 	"atlas-morg/rest/resource"
@@ -10,7 +11,7 @@ import (
 	"strconv"
 )
 
-func GetMonstersInMap(l *logrus.Logger) http.HandlerFunc {
+func GetMonstersInMap(l logrus.FieldLogger) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		value, err := strconv.Atoi(vars["worldId"])
@@ -47,7 +48,7 @@ func GetMonstersInMap(l *logrus.Logger) http.HandlerFunc {
 			response.Data = append(response.Data, getMonsterResponseObject(&x))
 		}
 
-		err = attributes.ToJSON(response, rw)
+		err = json2.ToJSON(response, rw)
 		if err != nil {
 			l.WithError(err).Errorf("Encoding GetMonstersInMap response")
 			rw.WriteHeader(http.StatusInternalServerError)
@@ -55,14 +56,14 @@ func GetMonstersInMap(l *logrus.Logger) http.HandlerFunc {
 	}
 }
 
-func CreateMonsterInMap(l *logrus.Logger) http.HandlerFunc {
+func CreateMonsterInMap(l logrus.FieldLogger) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		cs := &attributes.MonsterInputDataContainer{}
-		err := attributes.FromJSON(cs, r.Body)
+		err := json2.FromJSON(cs, r.Body)
 		if err != nil {
 			l.WithError(err).Errorf("Deserializing monster input")
 			rw.WriteHeader(http.StatusBadRequest)
-			attributes.ToJSON(&resource.GenericError{Message: err.Error()}, rw)
+			json2.ToJSON(&resource.GenericError{Message: err.Error()}, rw)
 			return
 		}
 
@@ -101,7 +102,7 @@ func CreateMonsterInMap(l *logrus.Logger) http.HandlerFunc {
 		var response attributes.MonsterDataContainer
 		response.Data = getMonsterResponseObject(m)
 
-		err = attributes.ToJSON(response, rw)
+		err = json2.ToJSON(response, rw)
 		if err != nil {
 			l.WithError(err).Errorf("Encoding GetMonstersInMap response")
 			rw.WriteHeader(http.StatusInternalServerError)

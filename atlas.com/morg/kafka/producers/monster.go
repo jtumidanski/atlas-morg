@@ -42,5 +42,5 @@ func (m *Monster) emit(worldId byte, channelId byte, mapId int, uniqueId int, mo
 		ActorId:   actorId,
 		Type:      theType,
 	}
-	produceEvent(m.l, "TOPIC_MONSTER_EVENT", createKey(mapId), e)
+	ProduceEvent(m.l, "TOPIC_MONSTER_EVENT")(CreateKey(mapId), e)
 }

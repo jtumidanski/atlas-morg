@@ -1,6 +1,7 @@
 package requests
 
 import (
+	"atlas-morg/json"
 	"atlas-morg/rest/attributes"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -23,7 +24,7 @@ func (c *MapInformation) GetMonsterInformation(monsterId int) (*attributes.Monst
 	}
 
 	td := &attributes.MonsterDataDataContainer{}
-	err = attributes.FromJSON(td, r.Body)
+	err = json.FromJSON(td, r.Body)
 	if err != nil {
 		c.l.WithError(err).Errorf("Decoding monster information for monster %d", monsterId)
 		return nil, err

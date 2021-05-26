@@ -1,6 +1,7 @@
 package consumers
 
 import (
+	"atlas-morg/kafka/handler"
 	"atlas-morg/kafka/producers"
 	"atlas-morg/monster"
 	"context"
@@ -16,13 +17,13 @@ type monsterDamageEvent struct {
 	Damage      int64 `json:"damage"`
 }
 
-func MonsterDamageEventCreator() EmptyEventCreator {
+func MonsterDamageEventCreator() handler.EmptyEventCreator {
 	return func() interface{} {
 		return &monsterDamageEvent{}
 	}
 }
 
-func HandleMonsterDamageEvent() EventProcessor {
+func HandleMonsterDamageEvent() handler.EventHandler {
 	return func(l logrus.FieldLogger, e interface{}) {
 		if event, ok := e.(*monsterDamageEvent); ok {
 			m, err := monster.GetMonsterRegistry().GetMonster(event.UniqueId)

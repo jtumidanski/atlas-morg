@@ -1,6 +1,7 @@
 package consumers
 
 import (
+	"atlas-morg/kafka/handler"
 	"atlas-morg/monster"
 	"github.com/sirupsen/logrus"
 )
@@ -21,13 +22,13 @@ type monsterMovementEvent struct {
 	RawMovement   []int `json:"rawMovement"`
 }
 
-func MonsterMovementEventCreator() EmptyEventCreator {
+func MonsterMovementEventCreator() handler.EmptyEventCreator {
 	return func() interface{} {
 		return &monsterMovementEvent{}
 	}
 }
 
-func HandleMonsterMovementEvent() EventProcessor {
+func HandleMonsterMovementEvent() handler.EventHandler {
 	return func(l logrus.FieldLogger, e interface{}) {
 		if event, ok := e.(*monsterMovementEvent); ok {
 			monster.GetMonsterRegistry().MoveMonster(event.UniqueId, event.EndX, event.EndY, event.Stance)

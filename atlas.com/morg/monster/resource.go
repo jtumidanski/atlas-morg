@@ -1,6 +1,7 @@
 package monster
 
 import (
+	json2 "atlas-morg/json"
 	"atlas-morg/rest/attributes"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -8,7 +9,7 @@ import (
 	"strconv"
 )
 
-func GetMonster(l *logrus.Logger) http.HandlerFunc {
+func GetMonster(l logrus.FieldLogger) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		value, err := strconv.Atoi(vars["monsterId"])
@@ -28,7 +29,7 @@ func GetMonster(l *logrus.Logger) http.HandlerFunc {
 		var response attributes.MonsterDataContainer
 		response.Data = getMonsterResponseObject(model)
 
-		err = attributes.ToJSON(response, rw)
+		err = json2.ToJSON(response, rw)
 		if err != nil {
 			l.WithError(err).Println("Encoding GetMonster response")
 			rw.WriteHeader(http.StatusInternalServerError)

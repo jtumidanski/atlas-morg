@@ -38,5 +38,5 @@ func (m *MonsterControl) emit(worldId byte, channelId byte, mapId int, character
 		UniqueId:    uniqueId,
 		Type:        theType,
 	}
-	produceEvent(m.l, "TOPIC_CONTROL_MONSTER_EVENT", createKey(mapId), e)
+	ProduceEvent(m.l, "TOPIC_CONTROL_MONSTER_EVENT")(CreateKey(mapId), e)
 }

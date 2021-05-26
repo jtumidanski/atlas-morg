@@ -1,6 +1,7 @@
 package consumers
 
 import (
+	"atlas-morg/kafka/handler"
 	"atlas-morg/monster"
 	"github.com/sirupsen/logrus"
 )
@@ -13,13 +14,13 @@ type mapCharacterEvent struct {
 	Type        string `json:"type"`
 }
 
-func MapCharacterEventCreator() EmptyEventCreator {
+func MapCharacterEventCreator() handler.EmptyEventCreator {
 	return func() interface{} {
 		return &mapCharacterEvent{}
 	}
 }
 
-func HandleMapCharacterEvent() EventProcessor {
+func HandleMapCharacterEvent() handler.EventHandler {
 	return func(l logrus.FieldLogger, e interface{}) {
 		if event, ok := e.(*mapCharacterEvent); ok {
 			if event.Type == "ENTER" {

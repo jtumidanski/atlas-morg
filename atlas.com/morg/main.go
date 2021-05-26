@@ -5,17 +5,23 @@ import (
 	"atlas-morg/logger"
 	"atlas-morg/monster"
 	"atlas-morg/rest"
+	"context"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 )
 
 func main() {
 	l := logger.CreateLogger()
+	l.Infoln("Starting main service.")
 
-	consumers.CreateEventConsumers(l)
+	wg := &sync.WaitGroup{}
+	ctx, cancel := context.WithCancel(context.Background())
 
-	rest.CreateRestService(l)
+	consumers.CreateEventConsumers(l, ctx, wg)
+
+	rest.CreateRestService(l, ctx, wg)
 
 	// trap sigterm or interrupt and gracefully shutdown the server
 	c := make(chan os.Signal, 1)
@@ -23,7 +29,10 @@ func main() {
 
 	// Block until a signal is received.
 	sig := <-c
-	l.Println("Got signal:", sig)
+	l.Infof("Initiating shutdown with signal %s.", sig)
+	cancel()
+	wg.Wait()
+	l.Infoln("Service shutdown.")
 
 	monster.Processor(l).DestroyAll()
 }

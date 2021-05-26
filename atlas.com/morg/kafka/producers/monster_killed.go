@@ -51,5 +51,5 @@ func (mk *MonsterKilled) EmitKilled(worldId byte, channelId byte, mapId int, uni
 		KillerId:      killerId,
 		DamageEntries: damageEntries,
 	}
-	produceEvent(mk.l, "TOPIC_MONSTER_KILLED_EVENT", createKey(mapId), e)
+	ProduceEvent(mk.l, "TOPIC_MONSTER_KILLED_EVENT")(CreateKey(mapId), e)
 }

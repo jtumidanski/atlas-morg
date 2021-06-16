@@ -23,7 +23,7 @@ func (m *processor) CreateMonster(worldId byte, channelId byte, mapId int, input
 		return nil, err
 	}
 
-	model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.Hp, ma.Mp)
+	model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.HP, ma.MP)
 
 	cid, err := m.GetControllerCandidate(worldId, channelId, mapId)
 	if err == nil {

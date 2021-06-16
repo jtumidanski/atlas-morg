@@ -10,10 +10,10 @@ type Model struct {
 	worldId            byte
 	channelId          byte
 	mapId              int
-	maxHp              int
-	hp                 int
-	maxMp              int
-	mp                 int
+	maxHp              uint32
+	hp                 uint32
+	maxMp              uint32
+	mp                 uint32
 	monsterId          int
 	controlCharacterId int
 	x                  int
@@ -24,7 +24,7 @@ type Model struct {
 	damageEntries      []models.DamageEntry
 }
 
-func NewMonster(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp int, mp int) *Model {
+func NewMonster(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
 	return &Model{
 		uniqueId:           uniqueId,
 		worldId:            worldId,
@@ -61,7 +61,7 @@ func (m *Model) MapId() int {
 	return m.mapId
 }
 
-func (m *Model) Hp() int {
+func (m *Model) Hp() uint32 {
 	return m.hp
 }
 
@@ -189,7 +189,7 @@ func (m *Model) Damage(characterId int, damage int64) *Model {
 		channelId:          m.ChannelId(),
 		mapId:              m.MapId(),
 		maxHp:              m.MaxHp(),
-		hp:                 m.Hp() - int(actualDamage),
+		hp:                 m.Hp() - uint32(actualDamage),
 		maxMp:              m.MaxMp(),
 		mp:                 m.Mp(),
 		monsterId:          m.MonsterId(),
@@ -222,14 +222,14 @@ func (m *Model) DamageLeader() int {
 	return m.damageEntries[index].CharacterId
 }
 
-func (m *Model) MaxHp() int {
+func (m *Model) MaxHp() uint32 {
 	return m.maxHp
 }
 
-func (m *Model) MaxMp() int {
+func (m *Model) MaxMp() uint32 {
 	return m.maxMp
 }
 
-func (m *Model) Mp() int {
+func (m *Model) Mp() uint32 {
 	return m.mp
 }

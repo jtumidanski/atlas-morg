@@ -4,17 +4,16 @@ import (
 	"atlas-morg/kafka/handler"
 	"atlas-morg/kafka/producers"
 	"atlas-morg/monster"
-	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type monsterDamageEvent struct {
-	WorldId     byte  `json:"worldId"`
-	ChannelId   byte  `json:"channelId"`
-	MapId       int   `json:"mapId"`
-	UniqueId    int   `json:"uniqueId"`
-	CharacterId int   `json:"characterId"`
-	Damage      int64 `json:"damage"`
+	WorldId     byte   `json:"worldId"`
+	ChannelId   byte   `json:"channelId"`
+	MapId       int    `json:"mapId"`
+	UniqueId    int    `json:"uniqueId"`
+	CharacterId uint32 `json:"characterId"`
+	Damage      int64  `json:"damage"`
 }
 
 func MonsterDamageEventCreator() handler.EmptyEventCreator {
@@ -43,7 +42,7 @@ func HandleMonsterDamageEvent() handler.EventHandler {
 			}
 
 			if s.Killed {
-				producers.NewMonsterKilled(l, context.Background()).EmitKilled(s.Monster.WorldId(), s.Monster.ChannelId(), s.Monster.MapId(), s.Monster.UniqueId(), s.Monster.MonsterId(), s.Monster.X(), s.Monster.Y(), s.CharacterId, s.Monster.DamageSummary())
+				producers.MonsterKilled(l)(s.Monster.WorldId(), s.Monster.ChannelId(), s.Monster.MapId(), s.Monster.UniqueId(), s.Monster.MonsterId(), s.Monster.X(), s.Monster.Y(), s.CharacterId, s.Monster.DamageSummary())
 				monster.GetMonsterRegistry().RemoveMonster(s.Monster.UniqueId())
 				return
 			}
@@ -51,8 +50,8 @@ func HandleMonsterDamageEvent() handler.EventHandler {
 			if event.CharacterId != s.Monster.ControlCharacterId() {
 				dl := s.Monster.DamageLeader() == event.CharacterId
 				if dl {
-					monster.Processor(l).StopControl(&s.Monster)
-					monster.Processor(l).StartControl(&s.Monster, event.CharacterId)
+					monster.StopControl(l)(&s.Monster)
+					monster.StartControl(l)(&s.Monster, event.CharacterId)
 				}
 			}
 

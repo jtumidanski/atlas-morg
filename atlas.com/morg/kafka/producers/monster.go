@@ -1,46 +1,42 @@
 package producers
 
 import (
-	"context"
 	"github.com/sirupsen/logrus"
 )
 
 type monsterEvent struct {
 	WorldId   byte   `json:"worldId"`
 	ChannelId byte   `json:"channelId"`
-	MapId     int    `json:"mapId"`
+	MapId     uint32 `json:"mapId"`
 	UniqueId  int    `json:"uniqueId"`
 	MonsterId int    `json:"monsterId"`
 	ActorId   int    `json:"actorId"`
 	Type      string `json:"type"`
 }
 
-type Monster struct {
-	l   logrus.FieldLogger
-	ctx context.Context
-}
-
-func NewMonster(l logrus.FieldLogger, ctx context.Context) *Monster {
-	return &Monster{l, ctx}
-}
-
-func (m *Monster) EmitCreated(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int) {
-	m.emit(worldId, channelId, mapId, uniqueId, monsterId, 0, "CREATED")
-}
-
-func (m *Monster) EmitDestroyed(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int) {
-	m.emit(worldId, channelId, mapId, uniqueId, monsterId, 0, "DESTROYED")
-}
-
-func (m *Monster) emit(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, actorId int, theType string) {
-	e := &monsterEvent{
-		WorldId:   worldId,
-		ChannelId: channelId,
-		MapId:     mapId,
-		UniqueId:  uniqueId,
-		MonsterId: monsterId,
-		ActorId:   actorId,
-		Type:      theType,
+func MonsterCreated(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+		emitMonsterEvent(l)(worldId, channelId, mapId, uniqueId, monsterId, 0, "CREATED")
 	}
-	ProduceEvent(m.l, "TOPIC_MONSTER_EVENT")(CreateKey(mapId), e)
+}
+
+func MonsterDestroyed(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+		emitMonsterEvent(l)(worldId, channelId, mapId, uniqueId, monsterId, 0, "DESTROYED")
+	}
+}
+
+func emitMonsterEvent(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, actorId int, theType string) {
+	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, actorId int, theType string) {
+		e := &monsterEvent{
+			WorldId:   worldId,
+			ChannelId: channelId,
+			MapId:     mapId,
+			UniqueId:  uniqueId,
+			MonsterId: monsterId,
+			ActorId:   actorId,
+			Type:      theType,
+		}
+		ProduceEvent(l, "TOPIC_MONSTER_EVENT")(CreateKey(int(mapId)), e)
+	}
 }

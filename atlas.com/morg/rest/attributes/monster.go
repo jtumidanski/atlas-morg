@@ -21,9 +21,9 @@ type MonsterData struct {
 type MonsterAttributes struct {
 	WorldId            byte            `json:"worldId"`
 	ChannelId          byte            `json:"channelId"`
-	MapId              int             `json:"mapId"`
+	MapId              uint32          `json:"mapId"`
 	MonsterId          int             `json:"monsterId"`
-	ControlCharacterId int             `json:"controlCharacterId"`
+	ControlCharacterId uint32          `json:"controlCharacterId"`
 	X                  int             `json:"x"`
 	Y                  int             `json:"y"`
 	Fh                 int             `json:"fh"`
@@ -37,6 +37,6 @@ type MonsterAttributes struct {
 }
 
 type MonsterDamage struct {
-	CharacterId int   `json:"characterId"`
-	Damage      int64 `json:"damage"`
+	CharacterId uint32 `json:"characterId"`
+	Damage      int64  `json:"damage"`
 }

@@ -5,6 +5,7 @@ import (
 	"atlas-morg/logger"
 	"atlas-morg/monster"
 	"atlas-morg/rest"
+	"atlas-morg/world"
 	"context"
 	"os"
 	"os/signal"
@@ -21,7 +22,7 @@ func main() {
 
 	consumers.CreateEventConsumers(l, ctx, wg)
 
-	rest.CreateRestService(l, ctx, wg)
+	rest.CreateService(l, ctx, wg, "/ms/morg", monster.InitResource, world.InitResource)
 
 	// trap sigterm or interrupt and gracefully shutdown the server
 	c := make(chan os.Signal, 1)
@@ -34,5 +35,5 @@ func main() {
 	wg.Wait()
 	l.Infoln("Service shutdown.")
 
-	monster.Processor(l).DestroyAll()
+	monster.DestroyAll(l)
 }

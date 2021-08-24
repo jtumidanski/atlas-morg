@@ -1,7 +1,7 @@
 package monster
 
 type DamageSummary struct {
-	CharacterId   int
+	CharacterId   uint32
 	Monster       Model
 	VisibleDamage int64
 	ActualDamage  int64

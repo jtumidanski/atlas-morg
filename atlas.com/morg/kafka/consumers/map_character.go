@@ -9,8 +9,8 @@ import (
 type mapCharacterEvent struct {
 	WorldId     byte   `json:"worldId"`
 	ChannelId   byte   `json:"channelId"`
-	MapId       int    `json:"mapId"`
-	CharacterId int    `json:"characterId"`
+	MapId       uint32 `json:"mapId"`
+	CharacterId uint32 `json:"characterId"`
 	Type        string `json:"type"`
 }
 
@@ -27,19 +27,19 @@ func HandleMapCharacterEvent() handler.EventHandler {
 				ms := monster.GetMonsterRegistry().GetMonstersInMap(event.WorldId, event.ChannelId, event.MapId)
 				for _, m := range ms {
 					if m.ControlCharacterId() == 0 {
-						monster.Processor(l).FindNextController(&m)
+						monster.FindNextController(l)(m)
 					}
 				}
 			} else if event.Type == "EXIT" {
 				ms := monster.GetMonsterRegistry().GetMonstersInMap(event.WorldId, event.ChannelId, event.MapId)
 				for _, m := range ms {
 					if m.ControlCharacterId() == event.CharacterId {
-						monster.Processor(l).StopControl(&m)
+						monster.StopControl(l)(m)
 					}
 				}
 				for _, m := range ms {
 					if m.ControlCharacterId() == event.CharacterId {
-						monster.Processor(l).FindNextController(&m)
+						monster.FindNextController(l)(m)
 					}
 				}
 			}

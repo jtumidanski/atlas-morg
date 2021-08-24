@@ -9,13 +9,13 @@ type Model struct {
 	uniqueId           int
 	worldId            byte
 	channelId          byte
-	mapId              int
+	mapId              uint32
 	maxHp              uint32
 	hp                 uint32
 	maxMp              uint32
 	mp                 uint32
 	monsterId          int
-	controlCharacterId int
+	controlCharacterId uint32
 	x                  int
 	y                  int
 	fh                 int
@@ -24,7 +24,7 @@ type Model struct {
 	damageEntries      []models.DamageEntry
 }
 
-func NewMonster(worldId byte, channelId byte, mapId int, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
+func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
 	return &Model{
 		uniqueId:           uniqueId,
 		worldId:            worldId,
@@ -57,7 +57,7 @@ func (m *Model) ChannelId() byte {
 	return m.channelId
 }
 
-func (m *Model) MapId() int {
+func (m *Model) MapId() uint32 {
 	return m.mapId
 }
 
@@ -69,7 +69,7 @@ func (m *Model) MonsterId() int {
 	return m.monsterId
 }
 
-func (m *Model) ControlCharacterId() int {
+func (m *Model) ControlCharacterId() uint32 {
 	return m.controlCharacterId
 }
 
@@ -98,7 +98,7 @@ func (m *Model) DamageEntries() []models.DamageEntry {
 }
 
 func (m *Model) DamageSummary() []models.DamageEntry {
-	var damageSummary = make(map[int]int64)
+	var damageSummary = make(map[uint32]int64)
 	for _, x := range m.damageEntries {
 		if _, ok := damageSummary[x.CharacterId]; ok {
 			damageSummary[x.CharacterId] += x.Damage
@@ -138,7 +138,7 @@ func (m *Model) Move(x int, y int, stance int) *Model {
 	}
 }
 
-func (m *Model) Control(characterId int) *Model {
+func (m *Model) Control(characterId uint32) *Model {
 	return &Model{
 		uniqueId:           m.UniqueId(),
 		worldId:            m.WorldId(),
@@ -180,7 +180,7 @@ func (m *Model) ClearControl() *Model {
 	}
 }
 
-func (m *Model) Damage(characterId int, damage int64) *Model {
+func (m *Model) Damage(characterId uint32, damage int64) *Model {
 	actualDamage := int64(m.Hp()) - int64(math.Max(float64(m.Hp())-float64(damage), 0))
 
 	return &Model{
@@ -210,7 +210,7 @@ func (m *Model) Alive() bool {
 	return m.Hp() > 0
 }
 
-func (m *Model) DamageLeader() int {
+func (m *Model) DamageLeader() uint32 {
 	index := -1
 	for i, x := range m.damageEntries {
 		if index == -1 {

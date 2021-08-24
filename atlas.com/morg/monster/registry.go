@@ -9,7 +9,7 @@ import (
 type Registry struct {
 	mutex                 sync.Mutex
 	monsterRegisterRWLock sync.RWMutex
-	monsterRegister       map[int]Model
+	monsterRegister       map[int]*Model
 	mapMonsters           map[models.MapKey][]int
 	mapLocks              map[models.MapKey]*sync.Mutex
 }
@@ -23,7 +23,7 @@ func GetMonsterRegistry() *Registry {
 	once.Do(func() {
 		monsterRegistry = &Registry{}
 
-		monsterRegistry.monsterRegister = make(map[int]Model)
+		monsterRegistry.monsterRegister = make(map[int]*Model)
 		monsterRegistry.mapMonsters = make(map[models.MapKey][]int)
 
 		monsterRegistry.mapLocks = make(map[models.MapKey]*sync.Mutex)
@@ -43,7 +43,7 @@ func (r *Registry) getMapLock(key models.MapKey) *sync.Mutex {
 	}
 }
 
-func existingIds(monsters map[int]Model) []int {
+func existingIds(monsters map[int]*Model) []int {
 	var ids []int
 	for _, x := range monsters {
 		ids = append(ids, x.UniqueId())
@@ -60,7 +60,7 @@ func contains(ids []int, id int) bool {
 	return false
 }
 
-func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId int, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
+func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId uint32, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
 
 	r.monsterRegisterRWLock.Lock()
 	var existingIds = existingIds(r.monsterRegister)
@@ -76,7 +76,7 @@ func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId int, monste
 
 	m := NewMonster(worldId, channelId, mapId, currentUniqueId, monsterId, x, y, fh, stance, team, hp, mp)
 
-	r.monsterRegister[uniqueId] = *m
+	r.monsterRegister[uniqueId] = m
 	r.monsterRegisterRWLock.Unlock()
 
 	mk := models.NewMapKey(worldId, channelId, mapId)
@@ -95,18 +95,18 @@ func (r *Registry) GetMonster(uniqueId int) (*Model, error) {
 	r.monsterRegisterRWLock.RLock()
 	if val, ok := r.monsterRegister[uniqueId]; ok {
 		r.monsterRegisterRWLock.RUnlock()
-		return &val, nil
+		return val, nil
 	} else {
 		r.monsterRegisterRWLock.RUnlock()
 		return nil, errors.New("monster not found")
 	}
 }
 
-func (r *Registry) GetMonstersInMap(worldId byte, channelId byte, mapId int) []Model {
+func (r *Registry) GetMonstersInMap(worldId byte, channelId byte, mapId uint32) []*Model {
 	mk := models.NewMapKey(worldId, channelId, mapId)
 	r.getMapLock(*mk).Lock()
 	r.monsterRegisterRWLock.RLock()
-	var result []Model
+	var result []*Model
 	for _, x := range r.mapMonsters[*mk] {
 		result = append(result, r.monsterRegister[x])
 	}
@@ -119,16 +119,16 @@ func (r *Registry) MoveMonster(uniqueId int, endX int, endY int, stance int) {
 	r.monsterRegisterRWLock.Lock()
 	if m, ok := r.monsterRegister[uniqueId]; ok {
 		um := m.Move(endX, endY, stance)
-		r.monsterRegister[uniqueId] = *um
+		r.monsterRegister[uniqueId] = um
 	}
 	r.monsterRegisterRWLock.Unlock()
 }
 
-func (r *Registry) ControlMonster(uniqueId int, characterId int) *Model {
+func (r *Registry) ControlMonster(uniqueId int, characterId uint32) *Model {
 	r.monsterRegisterRWLock.Lock()
 	if m, ok := r.monsterRegister[uniqueId]; ok {
 		um := m.Control(characterId)
-		r.monsterRegister[uniqueId] = *um
+		r.monsterRegister[uniqueId] = um
 		r.monsterRegisterRWLock.Unlock()
 		return um
 	} else {
@@ -141,7 +141,7 @@ func (r *Registry) ClearControl(uniqueId int) *Model {
 	r.monsterRegisterRWLock.Lock()
 	if m, ok := r.monsterRegister[uniqueId]; ok {
 		um := m.ClearControl()
-		r.monsterRegister[uniqueId] = *um
+		r.monsterRegister[uniqueId] = um
 		r.monsterRegisterRWLock.Unlock()
 		return um
 	} else {
@@ -150,11 +150,11 @@ func (r *Registry) ClearControl(uniqueId int) *Model {
 	}
 }
 
-func (r *Registry) ApplyDamage(characterId int, damage int64, uniqueId int) (*DamageSummary, error) {
+func (r *Registry) ApplyDamage(characterId uint32, damage int64, uniqueId int) (*DamageSummary, error) {
 	r.monsterRegisterRWLock.Lock()
 	if m, ok := r.monsterRegister[uniqueId]; ok {
 		um := m.Damage(characterId, damage)
-		r.monsterRegister[uniqueId] = *um
+		r.monsterRegister[uniqueId] = um
 		r.monsterRegisterRWLock.Unlock()
 		return &DamageSummary{
 			CharacterId:   characterId,
@@ -199,9 +199,9 @@ func (r *Registry) removeMonster(mapId models.MapKey, uniqueId int) {
 	}
 }
 
-func (r *Registry) GetMonsters() []Model {
+func (r *Registry) GetMonsters() []*Model {
 	r.monsterRegisterRWLock.RLock()
-	ms := make([]Model, len(r.monsterRegister))
+	ms := make([]*Model, len(r.monsterRegister))
 	for _, x := range r.monsterRegister {
 		ms = append(ms, x)
 	}

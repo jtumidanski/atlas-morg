@@ -1,8 +1,6 @@
 package rest
 
 import (
-	"atlas-morg/monster"
-	"atlas-morg/world"
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -10,20 +8,21 @@ import (
 	"sync"
 )
 
-func CreateRestService(l *logrus.Logger, ctx context.Context, wg *sync.WaitGroup) {
-	go NewServer(l, ctx, wg, ProduceRoutes)
+type RouteInitializer func(*mux.Router, logrus.FieldLogger)
+
+func CreateService(l *logrus.Logger, ctx context.Context, wg *sync.WaitGroup, basePath string, initializers ...RouteInitializer) {
+	go NewServer(l, ctx, wg, ProduceRoutes(basePath, initializers...))
 }
 
-func ProduceRoutes(l logrus.FieldLogger) http.Handler {
-	router := mux.NewRouter().StrictSlash(true).PathPrefix("/ms/morg").Subrouter()
-	router.Use(CommonHeader)
+func ProduceRoutes(basePath string, initializers ...RouteInitializer) func(l logrus.FieldLogger) http.Handler {
+	return func(l logrus.FieldLogger) http.Handler {
+		router := mux.NewRouter().PathPrefix(basePath).Subrouter().StrictSlash(true)
+		router.Use(CommonHeader)
 
-	mRouter := router.PathPrefix("/monsters").Subrouter()
-	mRouter.HandleFunc("/{monsterId}", monster.GetMonster(l)).Methods("GET")
+		for _, initializer := range initializers {
+			initializer(router, l)
+		}
 
-	wRouter := router.PathPrefix("/worlds").Subrouter()
-	wRouter.HandleFunc("/{worldId}/channels/{channelId}/maps/{mapId}/monsters", world.GetMonstersInMap(l)).Methods(http.MethodGet)
-	wRouter.HandleFunc("/{worldId}/channels/{channelId}/maps/{mapId}/monsters", world.CreateMonsterInMap(l)).Methods(http.MethodPost)
-
-	return router
+		return router
+	}
 }

@@ -3,7 +3,6 @@ package world
 import (
 	json2 "atlas-morg/json"
 	"atlas-morg/monster"
-	attributes "atlas-morg/rest/attributes"
 	"atlas-morg/rest/resource"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -56,8 +55,8 @@ func GetMonstersInMap(l logrus.FieldLogger, worldId byte, channelId byte, mapId 
 	return func(rw http.ResponseWriter, r *http.Request) {
 		ms := monster.GetMonsterRegistry().GetMonstersInMap(worldId, channelId, mapId)
 
-		var response attributes.MonsterListDataContainer
-		response.Data = make([]attributes.MonsterData, 0)
+		var response monster.DataListContainer
+		response.Data = make([]monster.DataBody, 0)
 		for _, x := range ms {
 			response.Data = append(response.Data, getMonsterResponseObject(x))
 		}
@@ -72,7 +71,7 @@ func GetMonstersInMap(l logrus.FieldLogger, worldId byte, channelId byte, mapId 
 
 func CreateMonsterInMap(l logrus.FieldLogger, worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
-		cs := &attributes.MonsterInputDataContainer{}
+		cs := &monster.InputDataContainer{}
 		err := json2.FromJSON(cs, r.Body)
 		if err != nil {
 			l.WithError(err).Errorf("Deserializing monster input")
@@ -89,7 +88,7 @@ func CreateMonsterInMap(l logrus.FieldLogger, worldId byte, channelId byte, mapI
 			rw.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		var response attributes.MonsterDataContainer
+		var response monster.DataContainer
 		response.Data = getMonsterResponseObject(m)
 
 		err = json2.ToJSON(response, rw)
@@ -100,19 +99,19 @@ func CreateMonsterInMap(l logrus.FieldLogger, worldId byte, channelId byte, mapI
 	}
 }
 
-func getMonsterResponseObject(m *monster.Model) attributes.MonsterData {
-	var monsterDamage []attributes.MonsterDamage
+func getMonsterResponseObject(m *monster.Model) monster.DataBody {
+	var monsterDamage []monster.DamageEntry
 	for _, x := range m.DamageEntries() {
-		monsterDamage = append(monsterDamage, attributes.MonsterDamage{
+		monsterDamage = append(monsterDamage, monster.DamageEntry{
 			CharacterId: x.CharacterId,
 			Damage:      x.Damage,
 		})
 	}
 
-	return attributes.MonsterData{
+	return monster.DataBody{
 		Id:   strconv.Itoa(m.UniqueId()),
 		Type: "com.atlas.morg.rest.attribute.MonsterAttributes",
-		Attributes: attributes.MonsterAttributes{
+		Attributes: monster.Attributes{
 			WorldId:            m.WorldId(),
 			ChannelId:          m.ChannelId(),
 			MapId:              m.MapId(),

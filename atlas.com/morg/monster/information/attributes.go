@@ -1,4 +1,4 @@
-package attributes
+package information
 
 type MonsterDataDataContainer struct {
 	Data MonsterDataData `json:"data"`
@@ -31,18 +31,18 @@ type MonsterDataAttributes struct {
 	RemoveOnMiss       bool              `json:"remove_on_miss"`
 	Changeable         bool              `json:"changeable"`
 	AnimationTimes     map[string]uint32 `json:"animation_times"`
-	Resistances        map[string]string `json:"resistances"`
-	LoseItems          []loseItem        `json:"lose_items"`
-	Skills             []skill           `json:"skills"`
-	Revives            []uint32          `json:"revives"`
+	Resistances     map[string]string `json:"resistances"`
+	LoseItems       []loseItem        `json:"lose_items"`
+	Skills          []skill           `json:"skills"`
+	Revives         []uint32          `json:"revives"`
 	TagColor           byte              `json:"tag_color"`
 	TagBackgroundColor byte              `json:"tag_background_color"`
 	FixedStance        uint32            `json:"fixed_stance"`
-	FirstAttack        bool              `json:"first_attack"`
-	Banish             banish            `json:"banish"`
-	DropPeriod         uint32            `json:"drop_period"`
-	SelfDestruction    selfDestruction   `json:"self_destruction"`
-	CoolDamage         coolDamage        `json:"cool_damage"`
+	FirstAttack     bool              `json:"first_attack"`
+	Banish          banish            `json:"banish"`
+	DropPeriod      uint32            `json:"drop_period"`
+	SelfDestruction selfDestruction   `json:"self_destruction"`
+	CoolDamage      coolDamage        `json:"cool_damage"`
 }
 
 

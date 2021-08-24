@@ -2,7 +2,6 @@ package monster
 
 import (
 	json2 "atlas-morg/json"
-	"atlas-morg/rest/attributes"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -32,7 +31,7 @@ func GetMonster(l logrus.FieldLogger) http.HandlerFunc {
 			rw.WriteHeader(http.StatusNotFound)
 			return
 		}
-		var response attributes.MonsterDataContainer
+		var response DataContainer
 		response.Data = getMonsterResponseObject(model)
 
 		err = json2.ToJSON(response, rw)
@@ -43,19 +42,19 @@ func GetMonster(l logrus.FieldLogger) http.HandlerFunc {
 	}
 
 }
-func getMonsterResponseObject(m *Model) attributes.MonsterData {
-	var monsterDamage []attributes.MonsterDamage
+func getMonsterResponseObject(m *Model) DataBody {
+	var monsterDamage []DamageEntry
 	for _, x := range m.DamageEntries() {
-		monsterDamage = append(monsterDamage, attributes.MonsterDamage{
+		monsterDamage = append(monsterDamage, DamageEntry{
 			CharacterId: x.CharacterId,
 			Damage:      x.Damage,
 		})
 	}
 
-	return attributes.MonsterData{
+	return DataBody{
 		Id:   strconv.Itoa(m.UniqueId()),
 		Type: "com.atlas.morg.rest.attribute.MonsterAttributes",
-		Attributes: attributes.MonsterAttributes{
+		Attributes: Attributes{
 			WorldId:            m.WorldId(),
 			ChannelId:          m.ChannelId(),
 			MapId:              m.MapId(),

@@ -3,20 +3,19 @@ package monster
 import (
 	"atlas-morg/kafka/producers"
 	_map "atlas-morg/map"
-	attributes2 "atlas-morg/rest/attributes"
-	requests2 "atlas-morg/rest/requests"
+	"atlas-morg/monster/information"
 	"errors"
 	"github.com/sirupsen/logrus"
 )
 
-func CreateMonster(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, input *attributes2.MonsterAttributes) (*Model, error) {
-	return func(worldId byte, channelId byte, mapId uint32, input *attributes2.MonsterAttributes) (*Model, error) {
-		ma, err := requests2.NewMapInformation(l).GetMonsterInformation(input.MonsterId)
+func CreateMonster(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
+	return func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
+		ma, err := information.GetById(l)(input.MonsterId)
 		if err != nil {
 			return nil, err
 		}
 
-		model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.HP, ma.MP)
+		model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.Attributes.HP, ma.Attributes.MP)
 
 		cid, err := GetControllerCandidate(l)(worldId, channelId, mapId)
 		if err == nil {

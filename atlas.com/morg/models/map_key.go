@@ -26,6 +26,3 @@ func GetChannelKey(worldId byte, channelId byte) int64 {
 	return w + c
 }
 
-func GetMapKey(worldId byte, channelId byte, mapId int) int64 {
-	return GetChannelKey(worldId, channelId) + int64(mapId)
-}

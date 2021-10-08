@@ -3,6 +3,7 @@ package consumers
 import (
 	"atlas-morg/kafka/handler"
 	"atlas-morg/monster"
+	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,7 +30,7 @@ func MonsterMovementEventCreator() handler.EmptyEventCreator {
 }
 
 func HandleMonsterMovementEvent() handler.EventHandler {
-	return func(l logrus.FieldLogger, e interface{}) {
+	return func(l logrus.FieldLogger, span opentracing.Span, e interface{}) {
 		if event, ok := e.(*monsterMovementEvent); ok {
 			monster.GetMonsterRegistry().MoveMonster(event.UniqueId, event.EndX, event.EndY, event.Stance)
 		} else {

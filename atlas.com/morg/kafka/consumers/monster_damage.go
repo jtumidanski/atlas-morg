@@ -4,6 +4,7 @@ import (
 	"atlas-morg/kafka/handler"
 	"atlas-morg/kafka/producers"
 	"atlas-morg/monster"
+	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,7 +24,7 @@ func MonsterDamageEventCreator() handler.EmptyEventCreator {
 }
 
 func HandleMonsterDamageEvent() handler.EventHandler {
-	return func(l logrus.FieldLogger, e interface{}) {
+	return func(l logrus.FieldLogger, span opentracing.Span, e interface{}) {
 		if event, ok := e.(*monsterDamageEvent); ok {
 			m, err := monster.GetMonsterRegistry().GetMonster(event.UniqueId)
 			if err != nil {
@@ -42,7 +43,7 @@ func HandleMonsterDamageEvent() handler.EventHandler {
 			}
 
 			if s.Killed {
-				producers.MonsterKilled(l)(s.Monster.WorldId(), s.Monster.ChannelId(), s.Monster.MapId(), s.Monster.UniqueId(), s.Monster.MonsterId(), s.Monster.X(), s.Monster.Y(), s.CharacterId, s.Monster.DamageSummary())
+				producers.MonsterKilled(l, span)(s.Monster.WorldId(), s.Monster.ChannelId(), s.Monster.MapId(), s.Monster.UniqueId(), s.Monster.MonsterId(), s.Monster.X(), s.Monster.Y(), s.CharacterId, s.Monster.DamageSummary())
 				monster.GetMonsterRegistry().RemoveMonster(s.Monster.UniqueId())
 				return
 			}
@@ -50,8 +51,8 @@ func HandleMonsterDamageEvent() handler.EventHandler {
 			if event.CharacterId != s.Monster.ControlCharacterId() {
 				dl := s.Monster.DamageLeader() == event.CharacterId
 				if dl {
-					monster.StopControl(l)(&s.Monster)
-					monster.StartControl(l)(&s.Monster, event.CharacterId)
+					monster.StopControl(l, span)(&s.Monster)
+					monster.StartControl(l, span)(&s.Monster, event.CharacterId)
 				}
 			}
 

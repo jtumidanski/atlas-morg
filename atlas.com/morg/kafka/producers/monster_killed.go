@@ -2,6 +2,7 @@ package producers
 
 import (
 	"atlas-morg/models"
+	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -22,7 +23,7 @@ type damageEntry struct {
 	Damage    int64  `json:"damage"`
 }
 
-func MonsterKilled(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, x int, y int, killerId uint32, damageSummary []models.DamageEntry) {
+func MonsterKilled(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, x int, y int, killerId uint32, damageSummary []models.DamageEntry) {
 	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, x int, y int, killerId uint32, damageSummary []models.DamageEntry) {
 		var damageEntries []damageEntry
 		for _, x := range damageSummary {
@@ -42,6 +43,6 @@ func MonsterKilled(l logrus.FieldLogger) func(worldId byte, channelId byte, mapI
 			KillerId:      killerId,
 			DamageEntries: damageEntries,
 		}
-		ProduceEvent(l, "TOPIC_MONSTER_KILLED_EVENT")(CreateKey(int(mapId)), e)
+		ProduceEvent(l, span, "TOPIC_MONSTER_KILLED_EVENT")(CreateKey(int(mapId)), e)
 	}
 }

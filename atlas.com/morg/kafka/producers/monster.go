@@ -1,6 +1,7 @@
 package producers
 
 import (
+	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
 
@@ -14,19 +15,19 @@ type monsterEvent struct {
 	Type      string `json:"type"`
 }
 
-func MonsterCreated(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+func MonsterCreated(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
 	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
-		emitMonsterEvent(l)(worldId, channelId, mapId, uniqueId, monsterId, 0, "CREATED")
+		emitMonsterEvent(l, span)(worldId, channelId, mapId, uniqueId, monsterId, 0, "CREATED")
 	}
 }
 
-func MonsterDestroyed(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
+func MonsterDestroyed(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
 	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int) {
-		emitMonsterEvent(l)(worldId, channelId, mapId, uniqueId, monsterId, 0, "DESTROYED")
+		emitMonsterEvent(l, span)(worldId, channelId, mapId, uniqueId, monsterId, 0, "DESTROYED")
 	}
 }
 
-func emitMonsterEvent(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, actorId int, theType string) {
+func emitMonsterEvent(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, actorId int, theType string) {
 	return func(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, actorId int, theType string) {
 		e := &monsterEvent{
 			WorldId:   worldId,
@@ -37,6 +38,6 @@ func emitMonsterEvent(l logrus.FieldLogger) func(worldId byte, channelId byte, m
 			ActorId:   actorId,
 			Type:      theType,
 		}
-		ProduceEvent(l, "TOPIC_MONSTER_EVENT")(CreateKey(int(mapId)), e)
+		ProduceEvent(l, span,"TOPIC_MONSTER_EVENT")(CreateKey(int(mapId)), e)
 	}
 }

@@ -7,16 +7,22 @@ import (
 	"sync"
 )
 
+const (
+	MapCharacterEvent    = "map_character_event"
+	MonsterDamageEvent   = "monster_damage_event"
+	MonsterMovementEvent = "monster_movement_event"
+)
+
 func CreateEventConsumers(l *logrus.Logger, ctx context.Context, wg *sync.WaitGroup) {
-	cec := func(topicToken string, emptyEventCreator handler.EmptyEventCreator, processor handler.EventHandler) {
-		createEventConsumer(l, ctx, wg, topicToken, emptyEventCreator, processor)
+	cec := func(topicToken string, name string, emptyEventCreator handler.EmptyEventCreator, processor handler.EventHandler) {
+		createEventConsumer(l, ctx, wg, name, topicToken, emptyEventCreator, processor)
 	}
-	cec("TOPIC_MAP_CHARACTER_EVENT", MapCharacterEventCreator(), HandleMapCharacterEvent())
-	cec("TOPIC_MONSTER_DAMAGE", MonsterDamageEventCreator(), HandleMonsterDamageEvent())
-	cec("TOPIC_MONSTER_MOVEMENT", MonsterMovementEventCreator(), HandleMonsterMovementEvent())
+	cec("TOPIC_MAP_CHARACTER_EVENT", MapCharacterEvent, MapCharacterEventCreator(), HandleMapCharacterEvent())
+	cec("TOPIC_MONSTER_DAMAGE", MonsterDamageEvent, MonsterDamageEventCreator(), HandleMonsterDamageEvent())
+	cec("TOPIC_MONSTER_MOVEMENT", MonsterMovementEvent, MonsterMovementEventCreator(), HandleMonsterMovementEvent())
 }
 
-func createEventConsumer(l *logrus.Logger, ctx context.Context, wg *sync.WaitGroup, topicToken string, emptyEventCreator handler.EmptyEventCreator, processor handler.EventHandler) {
+func createEventConsumer(l *logrus.Logger, ctx context.Context, wg *sync.WaitGroup, name string, topicToken string, emptyEventCreator handler.EmptyEventCreator, processor handler.EventHandler) {
 	wg.Add(1)
-	go NewConsumer(l, ctx, wg, topicToken, "Monster Registry Service", emptyEventCreator, processor)
+	go NewConsumer(l, ctx, wg, name, topicToken, "Monster Registry Service", emptyEventCreator, processor)
 }

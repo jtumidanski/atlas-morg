@@ -5,40 +5,41 @@ import (
 	_map "atlas-morg/map"
 	"atlas-morg/monster/information"
 	"errors"
+	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
 
-func CreateMonster(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
+func CreateMonster(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
 	return func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
-		ma, err := information.GetById(l)(input.MonsterId)
+		ma, err := information.GetById(l, span)(input.MonsterId)
 		if err != nil {
 			return nil, err
 		}
 
 		model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.Attributes.HP, ma.Attributes.MP)
 
-		cid, err := GetControllerCandidate(l)(worldId, channelId, mapId)
+		cid, err := GetControllerCandidate(l, span)(worldId, channelId, mapId)
 		if err == nil {
-			StartControl(l)(model, cid)
+			StartControl(l, span)(model, cid)
 		}
 
-		producers.MonsterCreated(l)(model.WorldId(), model.ChannelId(), model.MapId(), model.UniqueId(), model.MonsterId())
+		producers.MonsterCreated(l, span)(model.WorldId(), model.ChannelId(), model.MapId(), model.UniqueId(), model.MonsterId())
 		return model, nil
 	}
 }
 
-func FindNextController(l logrus.FieldLogger) func(model *Model) {
+func FindNextController(l logrus.FieldLogger, span opentracing.Span) func(model *Model) {
 	return func(model *Model) {
-		cid, err := GetControllerCandidate(l)(model.WorldId(), model.ChannelId(), model.MapId())
+		cid, err := GetControllerCandidate(l, span)(model.WorldId(), model.ChannelId(), model.MapId())
 		if err == nil {
-			StartControl(l)(model, cid)
+			StartControl(l, span)(model, cid)
 		}
 	}
 }
 
-func GetControllerCandidate(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32) (uint32, error) {
+func GetControllerCandidate(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) (uint32, error) {
 	return func(worldId byte, channelId byte, mapId uint32) (uint32, error) {
-		ids, err := _map.GetCharacterIdsInMap(l)(worldId, channelId, mapId)
+		ids, err := _map.GetCharacterIdsInMap(l, span)(worldId, channelId, mapId)
 		if err != nil {
 			return 0, err
 		}
@@ -74,37 +75,37 @@ func GetControllerCandidate(l logrus.FieldLogger) func(worldId byte, channelId b
 	}
 }
 
-func StartControl(l logrus.FieldLogger) func(monster *Model, controllerId uint32) {
+func StartControl(l logrus.FieldLogger, span opentracing.Span) func(monster *Model, controllerId uint32) {
 	return func(monster *Model, controllerId uint32) {
 		if monster.ControlCharacterId() != 0 {
-			StopControl(l)(monster)
+			StopControl(l, span)(monster)
 		}
 		um := GetMonsterRegistry().ControlMonster(monster.UniqueId(), controllerId)
 		if um != nil {
-			producers.StartMonsterControl(l)(um.WorldId(), um.ChannelId(), um.MapId(), um.ControlCharacterId(), um.UniqueId())
+			producers.StartMonsterControl(l, span)(um.WorldId(), um.ChannelId(), um.MapId(), um.ControlCharacterId(), um.UniqueId())
 		}
 	}
 }
 
-func StopControl(l logrus.FieldLogger) func(monster *Model) {
+func StopControl(l logrus.FieldLogger, span opentracing.Span) func(monster *Model) {
 	return func(monster *Model) {
 		um := GetMonsterRegistry().ClearControl(monster.UniqueId())
 		if um != nil {
-			producers.StopMonsterControl(l)(um.WorldId(), um.ChannelId(), um.MapId(), um.ControlCharacterId(), um.UniqueId())
+			producers.StopMonsterControl(l, span)(um.WorldId(), um.ChannelId(), um.MapId(), um.ControlCharacterId(), um.UniqueId())
 		}
 	}
 }
 
-func DestroyAll(l logrus.FieldLogger) {
+func DestroyAll(l logrus.FieldLogger, span opentracing.Span) {
 	ms := GetMonsterRegistry().GetMonsters()
 	for _, x := range ms {
-		Destroy(l)(x)
+		Destroy(l, span)(x)
 	}
 }
 
-func Destroy(l logrus.FieldLogger) func(model *Model) {
+func Destroy(l logrus.FieldLogger, span opentracing.Span) func(model *Model) {
 	return func(model *Model) {
 		GetMonsterRegistry().RemoveMonster(model.UniqueId())
-		producers.MonsterDestroyed(l)(model.WorldId(), model.ChannelId(), model.MapId(), model.UniqueId(), model.MonsterId())
+		producers.MonsterDestroyed(l, span)(model.WorldId(), model.ChannelId(), model.MapId(), model.UniqueId(), model.MonsterId())
 	}
 }

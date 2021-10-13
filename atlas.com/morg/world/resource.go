@@ -54,7 +54,7 @@ func ParseMap(l logrus.FieldLogger, next MapHandler) http.HandlerFunc {
 			return
 		}
 		mapId := uint32(value)
-		next(worldId, channelId, mapId)
+		next(worldId, channelId, mapId)(w, r)
 	}
 }
 
@@ -77,8 +77,6 @@ func HandleGetMonstersInMap(l logrus.FieldLogger) func(worldId byte, channelId b
 		}
 	}
 }
-
-
 
 func registerCreateMonsterInMap(l logrus.FieldLogger) http.HandlerFunc {
 	return rest.RetrieveSpan(CreateMonsterInMap, handleCreateMonsterInMap(l))

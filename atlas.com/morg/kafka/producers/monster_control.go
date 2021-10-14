@@ -9,24 +9,24 @@ type monsterControlEvent struct {
 	WorldId     byte   `json:"worldId"`
 	ChannelId   byte   `json:"channelId"`
 	CharacterId uint32 `json:"characterId"`
-	UniqueId    int    `json:"uniqueId"`
+	UniqueId    uint32 `json:"uniqueId"`
 	Type        string `json:"type"`
 }
 
-func StartMonsterControl(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int) {
-	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int) {
+func StartMonsterControl(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32) {
+	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32) {
 		emitMonsterControlEvent(l, span)(worldId, channelId, mapId, characterId, uniqueId, "START")
 	}
 }
 
-func StopMonsterControl(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int) {
-	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int) {
+func StopMonsterControl(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32) {
+	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32) {
 		emitMonsterControlEvent(l, span)(worldId, channelId, mapId, characterId, uniqueId, "STOP")
 	}
 }
 
-func emitMonsterControlEvent(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int, theType string) {
-	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId int, theType string) {
+func emitMonsterControlEvent(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32, theType string) {
+	return func(worldId byte, channelId byte, mapId uint32, characterId uint32, uniqueId uint32, theType string) {
 		e := &monsterControlEvent{
 			WorldId:     worldId,
 			ChannelId:   channelId,

@@ -11,8 +11,8 @@ import (
 type monsterDamageEvent struct {
 	WorldId     byte   `json:"worldId"`
 	ChannelId   byte   `json:"channelId"`
-	MapId       int    `json:"mapId"`
-	UniqueId    int    `json:"uniqueId"`
+	MapId       uint32 `json:"mapId"`
+	UniqueId    uint32 `json:"uniqueId"`
 	CharacterId uint32 `json:"characterId"`
 	Damage      int64  `json:"damage"`
 }

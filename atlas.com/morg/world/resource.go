@@ -13,83 +13,85 @@ import (
 )
 
 const (
-	GetMonstersInMap   = "get_monsters_in_map"
-	CreateMonsterInMap = "create_monster_in_map"
+	getMonstersInMap   = "get_monsters_in_map"
+	createMonsterInMap = "create_monster_in_map"
 )
 
 func InitResource(router *mux.Router, l logrus.FieldLogger) {
 	r := router.PathPrefix("/worlds").Subrouter()
-
-	r.HandleFunc("/{worldId}/channels/{channelId}/maps/{mapId}/monsters", ParseMap(l, HandleGetMonstersInMap(l))).Methods(http.MethodGet)
+	r.HandleFunc("/{worldId}/channels/{channelId}/maps/{mapId}/monsters", registerGetMonstersInMap(l)).Methods(http.MethodGet)
 	r.HandleFunc("/{worldId}/channels/{channelId}/maps/{mapId}/monsters", registerCreateMonsterInMap(l)).Methods(http.MethodPost)
 }
 
-type MapHandler func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc
+func registerGetMonstersInMap(l logrus.FieldLogger) http.HandlerFunc {
+	return rest.RetrieveSpan(getMonstersInMap, func(span opentracing.Span) http.HandlerFunc {
+		return parseMap(l, func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+			return handleGetMonstersInMap(l)(span)(worldId, channelId, mapId)
+		})
+	})
+}
 
-func ParseMap(l logrus.FieldLogger, next MapHandler) http.HandlerFunc {
+type mapHandler func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc
+
+func parseMap(l logrus.FieldLogger, next mapHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		value, err := strconv.Atoi(vars["worldId"])
+		worldId, err := strconv.ParseUint(vars["worldId"], 10, 8)
 		if err != nil {
-			l.WithError(err).Errorf("Error parsing worldId as integer")
+			l.WithError(err).Errorf("Error parsing worldId as byte")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		worldId := byte(value)
 
-		vars = mux.Vars(r)
-		value, err = strconv.Atoi(vars["channelId"])
+		channelId, err := strconv.ParseUint(vars["channelId"], 10, 8)
 		if err != nil {
-			l.WithError(err).Errorf("Error parsing channelId as integer")
+			l.WithError(err).Errorf("Error parsing channelId as byte")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		channelId := byte(value)
 
-		vars = mux.Vars(r)
-		value, err = strconv.Atoi(vars["mapId"])
+		mapId, err := strconv.ParseUint(vars["mapId"], 10, 32)
 		if err != nil {
-			l.WithError(err).Errorf("Error parsing mapId as integer")
+			l.WithError(err).Errorf("Error parsing mapId as uint32")
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		mapId := uint32(value)
-		next(worldId, channelId, mapId)(w, r)
+		next(byte(worldId), byte(channelId), uint32(mapId))(w, r)
 	}
 }
 
-func HandleGetMonstersInMap(l logrus.FieldLogger) func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
-	return func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
-		return func(rw http.ResponseWriter, r *http.Request) {
-			ms := monster.GetMonsterRegistry().GetMonstersInMap(worldId, channelId, mapId)
+func handleGetMonstersInMap(l logrus.FieldLogger) func(span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+	return func(span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+		return func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+			return func(rw http.ResponseWriter, r *http.Request) {
+				ms := monster.GetMonsterRegistry().GetMonstersInMap(worldId, channelId, mapId)
 
-			var response monster.DataListContainer
-			response.Data = make([]monster.DataBody, 0)
-			for _, x := range ms {
-				response.Data = append(response.Data, getMonsterResponseObject(x))
-			}
+				var response monster.DataListContainer
+				response.Data = make([]monster.DataBody, 0)
+				for _, x := range ms {
+					response.Data = append(response.Data, getMonsterResponseObject(x))
+				}
 
-			err := json2.ToJSON(response, rw)
-			if err != nil {
-				l.WithError(err).Errorf("Encoding HandleGetMonstersInMap response")
-				rw.WriteHeader(http.StatusInternalServerError)
+				err := json2.ToJSON(response, rw)
+				if err != nil {
+					l.WithError(err).Errorf("Encoding handleGetMonstersInMap response")
+					rw.WriteHeader(http.StatusInternalServerError)
+				}
 			}
 		}
 	}
 }
 
 func registerCreateMonsterInMap(l logrus.FieldLogger) http.HandlerFunc {
-	return rest.RetrieveSpan(CreateMonsterInMap, handleCreateMonsterInMap(l))
+	return rest.RetrieveSpan(createMonsterInMap, func(span opentracing.Span) http.HandlerFunc {
+		return parseMap(l, func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+			return handleCreateMonsterInMap(l)(span)(worldId, channelId, mapId)
+		})
+	})
 }
 
-func handleCreateMonsterInMap(l logrus.FieldLogger) rest.SpanHandler {
-	return func(span opentracing.Span) http.HandlerFunc {
-		return ParseMap(l, curriedCreateMonsterInMap(l)(span))
-	}
-}
-
-func curriedCreateMonsterInMap(l logrus.FieldLogger) func(span opentracing.Span) MapHandler {
-	return func(span opentracing.Span) MapHandler {
+func handleCreateMonsterInMap(l logrus.FieldLogger) func(span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
+	return func(span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
 		return func(worldId byte, channelId byte, mapId uint32) http.HandlerFunc {
 			return func(rw http.ResponseWriter, r *http.Request) {
 				cs := &monster.InputDataContainer{}
@@ -114,7 +116,7 @@ func curriedCreateMonsterInMap(l logrus.FieldLogger) func(span opentracing.Span)
 
 				err = json2.ToJSON(response, rw)
 				if err != nil {
-					l.WithError(err).Errorf("Encoding HandleGetMonstersInMap response")
+					l.WithError(err).Errorf("Encoding handleGetMonstersInMap response")
 					rw.WriteHeader(http.StatusInternalServerError)
 				}
 			}
@@ -132,7 +134,7 @@ func getMonsterResponseObject(m *monster.Model) monster.DataBody {
 	}
 
 	return monster.DataBody{
-		Id:   strconv.Itoa(m.UniqueId()),
+		Id:   strconv.Itoa(int(m.UniqueId())),
 		Type: "com.atlas.morg.rest.attribute.MonsterAttributes",
 		Attributes: monster.Attributes{
 			WorldId:            m.WorldId(),

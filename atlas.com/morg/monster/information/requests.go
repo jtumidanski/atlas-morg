@@ -14,8 +14,8 @@ const (
 	monsterResource                    = monstersResource + "/%d"
 )
 
-func GetById(l logrus.FieldLogger, span opentracing.Span) func(monsterId int) (*MonsterDataData, error) {
-	return func(monsterId int) (*MonsterDataData, error) {
+func GetById(l logrus.FieldLogger, span opentracing.Span) func(monsterId uint32) (*MonsterDataData, error) {
+	return func(monsterId uint32) (*MonsterDataData, error) {
 		td := &MonsterDataDataContainer{}
 		err := requests.Get(l, span)(fmt.Sprintf(monsterResource, monsterId), td)
 		if err != nil {

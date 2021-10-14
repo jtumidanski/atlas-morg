@@ -6,7 +6,7 @@ import (
 )
 
 type Model struct {
-	uniqueId           int
+	uniqueId           uint32
 	worldId            byte
 	channelId          byte
 	mapId              uint32
@@ -14,7 +14,7 @@ type Model struct {
 	hp                 uint32
 	maxMp              uint32
 	mp                 uint32
-	monsterId          int
+	monsterId          uint32
 	controlCharacterId uint32
 	x                  int
 	y                  int
@@ -24,7 +24,7 @@ type Model struct {
 	damageEntries      []models.DamageEntry
 }
 
-func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId int, monsterId int, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
+func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
 	return &Model{
 		uniqueId:           uniqueId,
 		worldId:            worldId,
@@ -45,7 +45,7 @@ func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId int, monste
 	}
 }
 
-func (m *Model) UniqueId() int {
+func (m *Model) UniqueId() uint32 {
 	return m.uniqueId
 }
 
@@ -65,7 +65,7 @@ func (m *Model) Hp() uint32 {
 	return m.hp
 }
 
-func (m *Model) MonsterId() int {
+func (m *Model) MonsterId() uint32 {
 	return m.monsterId
 }
 

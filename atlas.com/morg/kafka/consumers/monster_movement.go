@@ -8,19 +8,19 @@ import (
 )
 
 type monsterMovementEvent struct {
-	UniqueId      int   `json:"uniqueId"`
-	ObserverId    int   `json:"observerId"`
-	SkillPossible bool  `json:"skillPossible"`
-	Skill         int   `json:"skill"`
-	SkillId       int   `json:"skillId"`
-	SkillLevel    int   `json:"skillLevel"`
-	Option        int   `json:"option"`
-	StartX        int   `json:"startX"`
-	StartY        int   `json:"startY"`
-	EndX          int   `json:"endX"`
-	EndY          int   `json:"endY"`
-	Stance        int   `json:"stance"`
-	RawMovement   []int `json:"rawMovement"`
+	UniqueId      uint32 `json:"uniqueId"`
+	ObserverId    int    `json:"observerId"`
+	SkillPossible bool   `json:"skillPossible"`
+	Skill         int    `json:"skill"`
+	SkillId       int    `json:"skillId"`
+	SkillLevel    int    `json:"skillLevel"`
+	Option        int    `json:"option"`
+	StartX        int    `json:"startX"`
+	StartY        int    `json:"startY"`
+	EndX          int    `json:"endX"`
+	EndY          int    `json:"endY"`
+	Stance        int    `json:"stance"`
+	RawMovement   []int  `json:"rawMovement"`
 }
 
 func MonsterMovementEventCreator() handler.EmptyEventCreator {

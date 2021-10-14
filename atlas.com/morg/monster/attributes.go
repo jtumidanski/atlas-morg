@@ -22,7 +22,7 @@ type Attributes struct {
 	WorldId            byte          `json:"worldId"`
 	ChannelId          byte          `json:"channelId"`
 	MapId              uint32        `json:"mapId"`
-	MonsterId          int           `json:"monsterId"`
+	MonsterId          uint32        `json:"monsterId"`
 	ControlCharacterId uint32        `json:"controlCharacterId"`
 	X                  int           `json:"x"`
 	Y                  int           `json:"y"`

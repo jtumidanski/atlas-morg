@@ -14,9 +14,9 @@ const (
 	mapCharactersResource           = mapResource + "/characters/"
 )
 
-func requestCharactersInMap(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) (*CharacterDataContainer, error) {
-	return func(worldId byte, channelId byte, mapId uint32) (*CharacterDataContainer, error) {
-		ar := &CharacterDataContainer{}
+func requestCharactersInMap(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32) (*characterDataContainer, error) {
+	return func(worldId byte, channelId byte, mapId uint32) (*characterDataContainer, error) {
+		ar := &characterDataContainer{}
 		err := requests.Get(l, span)(fmt.Sprintf(mapCharactersResource, worldId, channelId, mapId), ar)
 		if err != nil {
 			return nil, err

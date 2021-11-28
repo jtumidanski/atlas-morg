@@ -19,7 +19,7 @@ import (
 const serviceName = "atlas-morg"
 
 func main() {
-	l := logger.CreateLogger()
+	l := logger.CreateLogger(serviceName)
 	l.Infoln("Starting main service.")
 
 	wg := &sync.WaitGroup{}

@@ -11,12 +11,13 @@ import (
 
 func CreateMonster(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
 	return func(worldId byte, channelId byte, mapId uint32, input *Attributes) (*Model, error) {
-		ma, err := information.GetById(l, span)(input.MonsterId)
+		ma, err := information.GetById(input.MonsterId)(l, span)
 		if err != nil {
 			return nil, err
 		}
 
-		model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, ma.Attributes.HP, ma.Attributes.MP)
+		attr := ma.Data().Attributes
+		model := GetMonsterRegistry().CreateMonster(worldId, channelId, mapId, input.MonsterId, input.X, input.Y, input.Fh, 5, input.Team, attr.HP, attr.MP)
 
 		cid, err := GetControllerCandidate(l, span)(worldId, channelId, mapId)
 		if err == nil {

@@ -1,7 +1,8 @@
 package main
 
 import (
-	"atlas-morg/kafka/consumers"
+	_map "atlas-morg/character"
+	"atlas-morg/kafka"
 	"atlas-morg/logger"
 	"atlas-morg/monster"
 	"atlas-morg/rest"
@@ -17,6 +18,7 @@ import (
 )
 
 const serviceName = "atlas-morg"
+const consumerGroupId = "Monster Registry Service"
 
 func main() {
 	l := logger.CreateLogger(serviceName)
@@ -30,13 +32,16 @@ func main() {
 		l.WithError(err).Fatal("Unable to initialize tracer.")
 	}
 	defer func(tc io.Closer) {
-		err := tc.Close()
+		err = tc.Close()
 		if err != nil {
 			l.WithError(err).Errorf("Unable to close tracer.")
 		}
 	}(tc)
 
-	consumers.CreateEventConsumers(l, ctx, wg)
+	kafka.CreateConsumers(l, ctx, wg,
+		_map.MapConsumer(consumerGroupId),
+		monster.DamageConsumer(consumerGroupId),
+		monster.MovementConsumer(consumerGroupId))
 
 	rest.CreateService(l, ctx, wg, "/ms/morg", monster.InitResource, world.InitResource)
 

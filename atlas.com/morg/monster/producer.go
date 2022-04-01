@@ -2,7 +2,6 @@ package monster
 
 import (
 	"atlas-morg/kafka"
-	"atlas-morg/models"
 	"github.com/opentracing/opentracing-go"
 	"github.com/sirupsen/logrus"
 )
@@ -96,9 +95,9 @@ type damageEntry struct {
 	Damage    int64  `json:"damage"`
 }
 
-func MonsterKilled(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, killerId uint32, damageSummary []models.DamageEntry) {
+func MonsterKilled(l logrus.FieldLogger, span opentracing.Span) func(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, killerId uint32, damageSummary []entry) {
 	producer := kafka.ProduceEvent(l, span, "TOPIC_MONSTER_KILLED_EVENT")
-	return func(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, killerId uint32, damageSummary []models.DamageEntry) {
+	return func(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, killerId uint32, damageSummary []entry) {
 		var damageEntries []damageEntry
 		for _, x := range damageSummary {
 			damageEntries = append(damageEntries, damageEntry{

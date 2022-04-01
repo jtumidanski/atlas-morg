@@ -1,7 +1,6 @@
 package monster
 
 import (
-	"atlas-morg/models"
 	"errors"
 	"sync"
 )
@@ -10,8 +9,8 @@ type Registry struct {
 	mutex                 sync.Mutex
 	monsterRegisterRWLock sync.RWMutex
 	monsterRegister       map[uint32]*Model
-	mapMonsters           map[models.MapKey][]uint32
-	mapLocks              map[models.MapKey]*sync.Mutex
+	mapMonsters           map[MapKey][]uint32
+	mapLocks              map[MapKey]*sync.Mutex
 }
 
 var monsterRegistry *Registry
@@ -24,14 +23,14 @@ func GetMonsterRegistry() *Registry {
 		monsterRegistry = &Registry{}
 
 		monsterRegistry.monsterRegister = make(map[uint32]*Model)
-		monsterRegistry.mapMonsters = make(map[models.MapKey][]uint32)
+		monsterRegistry.mapMonsters = make(map[MapKey][]uint32)
 
-		monsterRegistry.mapLocks = make(map[models.MapKey]*sync.Mutex)
+		monsterRegistry.mapLocks = make(map[MapKey]*sync.Mutex)
 	})
 	return monsterRegistry
 }
 
-func (r *Registry) getMapLock(key models.MapKey) *sync.Mutex {
+func (r *Registry) getMapLock(key MapKey) *sync.Mutex {
 	if val, ok := r.mapLocks[key]; ok {
 		return val
 	} else {
@@ -79,7 +78,7 @@ func (r *Registry) CreateMonster(worldId byte, channelId byte, mapId uint32, mon
 	r.monsterRegister[uniqueId] = m
 	r.monsterRegisterRWLock.Unlock()
 
-	mk := models.NewMapKey(worldId, channelId, mapId)
+	mk := NewMapKey(worldId, channelId, mapId)
 	r.getMapLock(*mk).Lock()
 	if om, ok := r.mapMonsters[*mk]; ok {
 		r.mapMonsters[*mk] = append(om, m.UniqueId())
@@ -103,7 +102,7 @@ func (r *Registry) GetMonster(uniqueId uint32) (*Model, error) {
 }
 
 func (r *Registry) GetMonstersInMap(worldId byte, channelId byte, mapId uint32) []*Model {
-	mk := models.NewMapKey(worldId, channelId, mapId)
+	mk := NewMapKey(worldId, channelId, mapId)
 	r.getMapLock(*mk).Lock()
 	r.monsterRegisterRWLock.RLock()
 	var result []*Model
@@ -172,7 +171,7 @@ func (r *Registry) ApplyDamage(characterId uint32, damage int64, uniqueId uint32
 func (r *Registry) RemoveMonster(uniqueId uint32) {
 	r.monsterRegisterRWLock.Lock()
 	if m, ok := r.monsterRegister[uniqueId]; ok {
-		mk := models.NewMapKey(m.WorldId(), m.ChannelId(), m.MapId())
+		mk := NewMapKey(m.WorldId(), m.ChannelId(), m.MapId())
 		r.removeMonster(*mk, uniqueId)
 	}
 	r.monsterRegisterRWLock.Unlock()
@@ -192,7 +191,7 @@ func indexOf(id uint32, data []uint32) int {
 	return -1 //not found.
 }
 
-func (r *Registry) removeMonster(mapId models.MapKey, uniqueId uint32) {
+func (r *Registry) removeMonster(mapId MapKey, uniqueId uint32) {
 	index := indexOf(uniqueId, r.mapMonsters[mapId])
 	if index >= 0 && index < len(r.mapMonsters[mapId]) {
 		r.mapMonsters[mapId] = remove(r.mapMonsters[mapId], index)

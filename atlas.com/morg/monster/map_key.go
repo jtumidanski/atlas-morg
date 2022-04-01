@@ -1,4 +1,4 @@
-package models
+package monster
 
 type MapKey struct {
 	WorldId   byte
@@ -25,4 +25,3 @@ func GetChannelKey(worldId byte, channelId byte) int64 {
 	c := int64(int(channelId) * 1000000000)
 	return w + c
 }
-

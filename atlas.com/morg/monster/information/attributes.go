@@ -1,16 +1,6 @@
 package information
 
-type MonsterDataDataContainer struct {
-	Data MonsterDataData `json:"data"`
-}
-
-type MonsterDataData struct {
-	Id         string                `json:"id"`
-	Type       string                `json:"type"`
-	Attributes MonsterDataAttributes `json:"attributes"`
-}
-
-type MonsterDataAttributes struct {
+type attributes struct {
 	Name               string            `json:"name"`
 	HP                 uint32            `json:"hp"`
 	MP                 uint32            `json:"mp"`
@@ -31,20 +21,19 @@ type MonsterDataAttributes struct {
 	RemoveOnMiss       bool              `json:"remove_on_miss"`
 	Changeable         bool              `json:"changeable"`
 	AnimationTimes     map[string]uint32 `json:"animation_times"`
-	Resistances     map[string]string `json:"resistances"`
-	LoseItems       []loseItem        `json:"lose_items"`
-	Skills          []skill           `json:"skills"`
-	Revives         []uint32          `json:"revives"`
+	Resistances        map[string]string `json:"resistances"`
+	LoseItems          []loseItem        `json:"lose_items"`
+	Skills             []skill           `json:"skills"`
+	Revives            []uint32          `json:"revives"`
 	TagColor           byte              `json:"tag_color"`
 	TagBackgroundColor byte              `json:"tag_background_color"`
 	FixedStance        uint32            `json:"fixed_stance"`
-	FirstAttack     bool              `json:"first_attack"`
-	Banish          banish            `json:"banish"`
-	DropPeriod      uint32            `json:"drop_period"`
-	SelfDestruction selfDestruction   `json:"self_destruction"`
-	CoolDamage      coolDamage        `json:"cool_damage"`
+	FirstAttack        bool              `json:"first_attack"`
+	Banish             banish            `json:"banish"`
+	DropPeriod         uint32            `json:"drop_period"`
+	SelfDestruction    selfDestruction   `json:"self_destruction"`
+	CoolDamage         coolDamage        `json:"cool_damage"`
 }
-
 
 type loseItem struct {
 	Id     uint32 `json:"id"`

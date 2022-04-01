@@ -12,6 +12,6 @@ const (
 	monsterResource                    = monstersResource + "/%d"
 )
 
-func GetById(monsterId uint32) requests.Request[MonsterDataAttributes] {
-	return requests.MakeGetRequest[MonsterDataAttributes](fmt.Sprintf(monsterResource, monsterId))
+func requestById(monsterId uint32) requests.Request[attributes] {
+	return requests.MakeGetRequest[attributes](fmt.Sprintf(monsterResource, monsterId))
 }

@@ -1,7 +1,6 @@
 package monster
 
 import (
-	"atlas-morg/models"
 	"math"
 )
 
@@ -21,7 +20,12 @@ type Model struct {
 	fh                 int
 	stance             int
 	team               int
-	damageEntries      []models.DamageEntry
+	damageEntries      []entry
+}
+
+type entry struct {
+	CharacterId uint32
+	Damage      int64
 }
 
 func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId uint32, monsterId uint32, x int, y int, fh int, stance int, team int, hp uint32, mp uint32) *Model {
@@ -41,7 +45,7 @@ func NewMonster(worldId byte, channelId byte, mapId uint32, uniqueId uint32, mon
 		fh:                 fh,
 		stance:             stance,
 		team:               team,
-		damageEntries:      make([]models.DamageEntry, 0),
+		damageEntries:      make([]entry, 0),
 	}
 }
 
@@ -93,11 +97,11 @@ func (m *Model) Stance() int {
 	return m.stance
 }
 
-func (m *Model) DamageEntries() []models.DamageEntry {
+func (m *Model) DamageEntries() []entry {
 	return m.damageEntries
 }
 
-func (m *Model) DamageSummary() []models.DamageEntry {
+func (m *Model) DamageSummary() []entry {
 	var damageSummary = make(map[uint32]int64)
 	for _, x := range m.damageEntries {
 		if _, ok := damageSummary[x.CharacterId]; ok {
@@ -107,9 +111,9 @@ func (m *Model) DamageSummary() []models.DamageEntry {
 		}
 	}
 
-	var results []models.DamageEntry
+	var results []entry
 	for id, dmg := range damageSummary {
-		results = append(results, models.DamageEntry{
+		results = append(results, entry{
 			CharacterId: id,
 			Damage:      dmg,
 		})
@@ -199,7 +203,7 @@ func (m *Model) Damage(characterId uint32, damage int64) *Model {
 		fh:                 m.Fh(),
 		stance:             m.Stance(),
 		team:               m.Team(),
-		damageEntries: append(m.DamageEntries(), models.DamageEntry{
+		damageEntries: append(m.DamageEntries(), entry{
 			CharacterId: characterId,
 			Damage:      actualDamage,
 		}),
